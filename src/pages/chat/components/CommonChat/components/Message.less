@@ -1,0 +1,81 @@
+.container {
+  padding: 10px;
+  position: relative;
+  border-radius: 8px;
+  border: none !important;
+  line-height: 1.5em;
+
+  :global {
+    pre {
+      background-color: #64748b10;
+      font-size: 0.8rem;
+      margin-top: 0.5rem;
+    }
+    .table {
+      font-size: 0.8em;
+    }
+
+    .table thead tr {
+      background-color: #64748b40;
+      text-align: left;
+    }
+
+    .table th,
+    .table td {
+      padding: 0.6rem 1rem;
+    }
+
+    .table tbody tr:last-of-type {
+      border-bottom: 2px solid #64748b40;
+    }
+
+    .gpt-copy-btn {
+      --un-bg-opacity: 1;
+      background-color: rgba(45, 45, 45, var(--un-bg-opacity));
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      z-index: 3;
+      width: 2rem;
+      height: 2rem;
+      display: flex;
+      cursor: pointer;
+      align-items: center;
+      justify-content: center;
+      border-width: 1px;
+      border-color: transparent;
+      --un-bg-opacity: 1;
+      background-color: rgba(248, 249, 250, var(--un-bg-opacity));
+      padding: 0.5rem;
+      opacity: 0.9;
+    }
+  }
+}
+.content {
+  &.isMe {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    align-content: flex-end;
+
+    .userName {
+      text-align: right;
+    }
+  }
+}
+.userName {
+  font-size: 0.8em;
+}
+.contentText {
+  padding: 5px 10px;
+  border-radius: 5px;
+  display: inline-block;
+
+  :last-child {
+    margin-bottom: 0;
+  }
+}
+// .role {border}
+.null-role {
+  visibility: hidden;
+}

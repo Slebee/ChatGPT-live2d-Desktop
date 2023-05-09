@@ -1,0 +1,46 @@
+export default {
+  'page.chat.title': '聊天',
+  'page.live2d-model-setting.title': 'Live2D模型设置',
+
+  /** 基础设置 */
+  'setting.baseSetting': '基础设置',
+  'setting.title': '设置',
+  'setting.sendKey': '发送键',
+  'setting.language': '语言',
+
+  /** OpenAI */
+  'setting.openAiSetting': 'OpenAI 设置',
+  'setting.openAi.temperature': '随机性',
+  'setting.openAi.temperature.description':
+    '值越大，回复越随机，大于1可能会导致乱码',
+  'setting.openAi.maxTokens': '单次回复限制',
+  'setting.openAi.maxTokens.description': '单次交互所用的最大Token数',
+  'setting.openAi.model': '模型',
+  'setting.openAi.chatHistorySize': '附带历史消息数',
+  'setting.openAi.chatHistorySize.description': '每次请求附带的历史消息数',
+  'setting.openAi.presencePenalty': '话题新鲜度',
+  'setting.openAi.basePath': '基础路径',
+  'setting.openAi.basePath.description': 'OpenAI API接口地址的基础路径',
+  'setting.openAi.presencePenalty.description': '值越大，越有可能拓展到新话题',
+
+  /** Vits */
+  'setting.vitsSetting': 'Vits 设置',
+  'setting.vits.basePath': '基础路径',
+  'setting.vits.basePath.description': 'Vits API接口地址的基础路径',
+
+  'chat.form.newChat': '新建聊天',
+  'chat.form.editChat': '修改',
+  'chat.form.name': '名字',
+  'chat.form.avatar': '头像',
+  'chat.form.voice': '声音',
+  'chat.form.vits.noise': '噪声',
+  'chat.form.vits.noise.description': '一般来说，值越低越莫得感情',
+  'chat.form.vits.length.description':
+    '调节语音长度，相当于调节语速，该数值越大语速越慢',
+  'chat.form.vits.length': '语速',
+  'chat.form.reference': '参考',
+  'chat.form.description': '人设',
+  'chat.form.missingApiKey': '请先设置你的OpenAI API Key',
+  'chat.form.inputAreaPlaceholder': '在这里输入...',
+  'chat.form.gotoSetApiKey': '设置',
+};
