@@ -1,6 +1,5 @@
 import { ModelEntity } from './ModelEntity';
 import { ExtendedFileList, SoundManager } from 'pixi-live2d-display';
-import { save } from '@/utils/storage';
 // @ts-ignore
 import Stats from 'stats.js';
 import { PixiApp } from '@/object/model/PixiApp';
@@ -96,7 +95,6 @@ export class App {
 
   static moundStats() {}
 
-  @save('stats')
   static set showStats(value: boolean) {
     this._showStats = value;
 
@@ -111,7 +109,6 @@ export class App {
     return this._showStats;
   }
 
-  @save('volume')
   static set volume(value: number) {
     this._volume = value;
     SoundManager.volume = value;
@@ -121,7 +118,6 @@ export class App {
     return this._volume;
   }
 
-  @save('modelFrame')
   static set showModelFrame(value: boolean) {
     this._showModelFrame = value;
 
@@ -136,7 +132,6 @@ export class App {
     return this._showModelFrame;
   }
 
-  @save('hitAreaFrames')
   static set showHitAreaFrames(value: boolean) {
     this._showHitAreaFrames = value;
 

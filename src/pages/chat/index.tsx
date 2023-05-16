@@ -8,13 +8,19 @@ import { Empty } from 'antd';
 import TopicListActions from './components/TopicListActions';
 import { useEffect, useRef } from 'react';
 import useUpdateEffect from '@/hooks/useUpdateEffect';
-import { appSettingActions, useAppSetting } from '@/stores/setting';
+import { useAppSetting } from '@/stores/setting';
 import { listen } from '@tauri-apps/api/event';
 import Search from './components/TopicList/components/Search';
 import { Events } from '@/enum/events';
-import SettingContent from './components/SettingContent';
+import { setShadow } from '@/utils/shadow';
+import ExtraActions from '@/components/WindowContainer/components/ExtraActions';
+import { debounce } from '@/utils';
 
 const defaultSizes = [200, 500];
+function reload() {
+  window.location.reload();
+}
+const debounceReload = debounce(reload, 500);
 const ChatPage = () => {
   const { openedRobots, robots, currentRobotId, fullScreenRobot } = useRobots();
   const [setting] = useAppSetting();
@@ -27,19 +33,18 @@ const ChatPage = () => {
   useEffect(() => {
     let unlisten: () => void;
     async function listenChange() {
-      unlisten = await listen(Events.settingChanged, (event) => {
-        setTimeout(() => {
-          location.reload();
-        }, 600);
+      unlisten = await listen(Events.settingChanged, () => {
+        debounceReload();
       });
     }
     listenChange();
+    setShadow('chat');
     return () => {
       unlisten?.();
     };
   }, []);
   return (
-    <WindowContainer name="chat">
+    <div className="flex w-full h-full">
       <Allotment ref={allotmentRef} defaultSizes={defaultSizes}>
         {!fullScreenRobot && (
           <Allotment.Pane priority={1} className="transition-all" minSize={60}>
@@ -54,39 +59,35 @@ const ChatPage = () => {
         )}
 
         <Allotment.Pane priority={2} className="transition-all" minSize={200}>
-          {currentRobotId === undefined && !setting.opened ? (
-            <Empty className="mt-5" />
-          ) : (
-            <div className="w-full h-full relative transition transition-transform ">
-              {setting.opened && (
-                <SettingContent
-                  onClose={() => {
-                    appSettingActions.toggleSetting();
-                  }}
-                />
-              )}
-              {openedRobots.map((robotId) => {
-                const robot = robots.find((r) => r.id === robotId)!;
-                if (!robot) {
-                  return null;
-                }
-                return (
-                  <CommonChat
-                    key={robotId}
-                    robot={robot}
-                    className={
-                      currentRobotId === robot.id && !setting.opened
-                        ? 'flex'
-                        : 'w-0 h-0 hidden'
-                    }
-                  />
-                );
-              })}
-            </div>
-          )}
+          <div className="w-full h-full flex flex-col">
+            <ExtraActions windowName="chat" className="p-1 pb-0 flex-auto" />
+            {currentRobotId === undefined && !setting.basic.opened ? (
+              <Empty className="mt-5" />
+            ) : (
+              <div className="w-full h-full relative transition transition-transform ">
+                {openedRobots.map((robotId) => {
+                  const robot = robots.find((r) => r.id === robotId)!;
+                  if (!robot) {
+                    return null;
+                  }
+                  return (
+                    <CommonChat
+                      key={robotId}
+                      robot={robot}
+                      className={
+                        currentRobotId === robot.id && !setting.basic.opened
+                          ? 'flex'
+                          : 'w-0 h-0 hidden'
+                      }
+                    />
+                  );
+                })}
+              </div>
+            )}
+          </div>
         </Allotment.Pane>
       </Allotment>
-    </WindowContainer>
+    </div>
   );
 };
 

@@ -19,6 +19,7 @@ import { Speaker } from '@/types';
 import { QuestionCircleOutlined, SoundOutlined } from '@ant-design/icons';
 import { Vits } from '@/object/tts/Vits';
 import { chatActionsFactory } from '@/pages/chat/stores/chats';
+import { RobotType } from '@/enum/robot';
 
 type FormValues = {
   name: string;
@@ -27,6 +28,8 @@ type FormValues = {
   speakerId: number;
   vitsNoise: number;
   vitsLength: number;
+  type: RobotType;
+  channelId: string;
 };
 type AddTopicModalProps = {
   children: React.ReactNode;
@@ -76,6 +79,8 @@ const AddTopicModal = ({
         centered
         bodyStyle={{
           maxHeight: 500,
+          overflowY: 'auto',
+          paddingRight: 10,
         }}
         onCancel={() => {
           setVisible(false);
@@ -83,9 +88,6 @@ const AddTopicModal = ({
         open={visible}
         maskClosable={false}
         title={title ?? <FormattedMessage id="chat.form.newChat" />}
-        okButtonProps={{
-          className: 'bg-sky-500',
-        }}
         afterClose={() => {
           form.resetFields();
         }}
@@ -102,10 +104,14 @@ const AddTopicModal = ({
                 description: values.description,
                 introduction: values.description,
                 avatar: values.avatar,
+                type: values.type,
                 vits: {
                   speaker,
                   noise: values.vitsNoise,
                   length: values.vitsLength,
+                },
+                claude: {
+                  channelId: values.channelId,
                 },
               };
               onSubmit?.();
@@ -149,13 +155,43 @@ const AddTopicModal = ({
           >
             <AvatarSelect />
           </Form.Item>
-          {/* <Form.Item
-            label={<FormattedMessage id="chat.form.live2Model" />}
-            name="modelId"
-            initialValue={initialValues?.id || '1'}
+          <Form.Item
+            label={<FormattedMessage id="chat.form.robotType" />}
+            name="type"
+            initialValue={initialValues?.type || RobotType.GPT}
           >
-            <AvatarSelect />
-          </Form.Item> */}
+            <Select
+              options={[
+                {
+                  label: 'GPT',
+                  value: RobotType.GPT,
+                },
+                {
+                  label: 'Claude',
+                  value: RobotType.CLAUDE,
+                },
+              ]}
+            />
+          </Form.Item>
+          <Form.Item noStyle dependencies={['type']}>
+            {({ getFieldValue }) => {
+              if (getFieldValue('type') === RobotType.CLAUDE) {
+                return (
+                  <Form.Item
+                    label={<FormattedMessage id="chat.form.claude.channelId" />}
+                    name="channelId"
+                    initialValue={
+                      initialValues?.claude?.channelId ?? 'chat-7879'
+                    }
+                  >
+                    <Input />
+                  </Form.Item>
+                );
+              }
+              return null;
+            }}
+          </Form.Item>
+
           <Form.Item
             label={<FormattedMessage id="chat.form.voice" />}
             name="speakerId"
@@ -200,74 +236,95 @@ const AddTopicModal = ({
               })}
             </Select>
           </Form.Item>
-          <Form.Item
-            name="vitsNoise"
-            label={
-              <Tooltip
-                title={
-                  <FormattedMessage id="chat.form.vits.noise.description" />
-                }
-              >
-                <Space>
-                  <FormattedMessage id="chat.form.vits.noise" />
-                  <QuestionCircleOutlined />
-                </Space>
-              </Tooltip>
-            }
-            initialValue={initialValues?.vits?.noise || 0.2}
-          >
-            <Slider min={0.0} max={2.0} step={0.1} className="w-full" />
+          <Form.Item noStyle dependencies={['speakerId']}>
+            {({ getFieldValue }) => {
+              if (getFieldValue('speakerId') === undefined) return null;
+              return (
+                <>
+                  <Form.Item
+                    name="vitsNoise"
+                    label={
+                      <Tooltip
+                        title={
+                          <FormattedMessage id="chat.form.vits.noise.description" />
+                        }
+                      >
+                        <Space>
+                          <FormattedMessage id="chat.form.vits.noise" />
+                          <QuestionCircleOutlined />
+                        </Space>
+                      </Tooltip>
+                    }
+                    initialValue={initialValues?.vits?.noise || 0.2}
+                  >
+                    <Slider min={0.0} max={2.0} step={0.1} className="w-full" />
+                  </Form.Item>
+                  <Form.Item
+                    name="vitsLength"
+                    label={
+                      <Tooltip
+                        title={
+                          <FormattedMessage id="chat.form.vits.length.description" />
+                        }
+                      >
+                        <Space>
+                          <FormattedMessage id="chat.form.vits.length" />
+                          <QuestionCircleOutlined />
+                        </Space>
+                      </Tooltip>
+                    }
+                    initialValue={initialValues?.vits?.length || 1.2}
+                  >
+                    <Slider min={0.1} max={2.0} step={0.1} className="w-full" />
+                  </Form.Item>
+                </>
+              );
+            }}
           </Form.Item>
-          <Form.Item
-            name="vitsLength"
-            label={
-              <Tooltip
-                title={
-                  <FormattedMessage id="chat.form.vits.length.description" />
-                }
-              >
-                <Space>
-                  <FormattedMessage id="chat.form.vits.length" />
-                  <QuestionCircleOutlined />
-                </Space>
-              </Tooltip>
-            }
-            initialValue={initialValues?.vits?.length || 1.2}
-          >
-            <Slider min={0.1} max={2.0} step={0.1} className="w-full" />
-          </Form.Item>
-          <Form.Item
-            label={<FormattedMessage id="chat.form.reference" />}
-            name="reference"
-          >
-            <Select
-              showSearch
-              filterOption={(input, option) =>
-                (option?.label ?? '')
-                  .toLowerCase()
-                  .includes(input.toLowerCase())
+
+          <Form.Item noStyle dependencies={['type']}>
+            {({ getFieldValue }) => {
+              if (getFieldValue('type') === RobotType.GPT) {
+                return (
+                  <>
+                    <Form.Item
+                      label={<FormattedMessage id="chat.form.reference" />}
+                      name="reference"
+                    >
+                      <Select
+                        showSearch
+                        filterOption={(input, option) =>
+                          (option?.label ?? '')
+                            .toLowerCase()
+                            .includes(input.toLowerCase())
+                        }
+                        onChange={(v) => {
+                          form.setFieldValue('description', v);
+                        }}
+                        options={acts.map((act) => ({
+                          label: act.act,
+                          value: act.prompt,
+                        }))}
+                        allowClear
+                      />
+                    </Form.Item>
+                    <Form.Item
+                      label={<FormattedMessage id="chat.form.description" />}
+                      name="description"
+                      initialValue={initialValues?.description}
+                    >
+                      <Input.TextArea
+                        rows={4}
+                        style={{
+                          resize: 'none',
+                        }}
+                      />
+                    </Form.Item>
+                  </>
+                );
               }
-              onChange={(v) => {
-                form.setFieldValue('description', v);
-              }}
-              options={acts.map((act) => ({
-                label: act.act,
-                value: act.prompt,
-              }))}
-              allowClear
-            />
-          </Form.Item>
-          <Form.Item
-            label={<FormattedMessage id="chat.form.description" />}
-            name="description"
-            initialValue={initialValues?.description}
-          >
-            <Input.TextArea
-              autoSize={{
-                minRows: 3,
-                maxRows: 7,
-              }}
-            />
+              return null;
+            }}
           </Form.Item>
         </Form>
       </Modal>

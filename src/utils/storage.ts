@@ -1,27 +1,29 @@
-export function save(key: string) {
-    return function(target: any, propertyKey: string, descriptor: PropertyDescriptor) {
-        const set = descriptor.set!;
+import { Store } from 'tauri-plugin-store-api';
+import { proxy, subscribe } from 'valtio';
+import { debounce, deepMerge } from '.';
 
-        descriptor.set = function(value: any) {
-            set.call(this, value);
-            saveValue(key, value);
-        };
-
-        const value = loadValue(key, descriptor.get!.call(target));
-        set.call(target, value);
-    };
-}
-
-export function saveValue<T = any>(key: string, value: T) {
-    localStorage.setItem(key, JSON.stringify(value));
-}
-
-export function loadValue<T = any>(key: string, defaultValue: T): T {
-    const data = localStorage.getItem(key);
-
-    if (data === null) {
-        return defaultValue;
-    }
-
-    return JSON.parse(data);
+export async function proxyWithPersist<T extends object>(
+  name: string,
+  data: T,
+  events?: {
+    onSave?: (name: string, data: T) => void;
+  },
+) {
+  const store = new Store(`./${name}.json`);
+  let dataWithPrev: T = data;
+  const prevData: Record<string, any> | null = await store.get(name);
+  if (prevData !== null) {
+    dataWithPrev = deepMerge(data, prevData) as T;
+  }
+  const p = proxy<T>(dataWithPrev);
+  const save = debounce(async (name: string, d: T) => {
+    await store.set(name, d);
+    await store.save();
+    events?.onSave?.(name, d);
+  }, 500);
+  subscribe(p, () => {
+    console.log(p);
+    save(name, p);
+  });
+  return p;
 }

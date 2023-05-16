@@ -4,6 +4,7 @@
 use serde::{Deserialize, Serialize};
 use tauri::{AppHandle, Manager, Runtime};
 
+mod commands;
 mod tray;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
@@ -22,12 +23,17 @@ fn main() {
     let context = tauri::generate_context!();
     tauri::Builder::default()
         .plugin(tauri_plugin_positioner::init())
+        .plugin(tauri_plugin_store::Builder::default().build())
+        .plugin(tauri_plugin_window_state::Builder::default().build())
         .system_tray(tray::menu())
         .on_system_tray_event(|app, event| {
             tauri_plugin_positioner::on_tray_event(app, &event);
             tray::handler(app, &event)
         })
-        .invoke_handler(tauri::generate_handler![set_shadow,])
+        .invoke_handler(tauri::generate_handler![
+            set_shadow,
+            commands::show_in_folder
+        ])
         .run(context)
         .expect("error while running tauri application");
 }

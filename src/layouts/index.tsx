@@ -1,5 +1,5 @@
 import { Outlet } from 'umi';
-import { ConfigProvider, theme } from 'antd';
+import { App, ConfigProvider, theme } from 'antd';
 import { useAppSetting } from '@/stores/setting';
 
 export default function Layout() {
@@ -9,16 +9,18 @@ export default function Layout() {
       theme={{
         token: {
           colorPrimary: '#1890ff',
-          lineWidth: 0,
+          // lineWidth: 0,
           colorBgContainer: '#f5f5f5',
         },
         algorithm:
-          setting.theme === 'dark'
+          setting.basic.theme === 'dark'
             ? theme.darkAlgorithm
             : theme.defaultAlgorithm,
       }}
     >
-      <Outlet />
+      <App className="h-full">
+        <Outlet />
+      </App>
     </ConfigProvider>
   );
 }

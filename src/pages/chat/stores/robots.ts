@@ -1,7 +1,8 @@
 import { useSnapshot } from 'valtio';
-import { proxyWithPersist } from '@/utils';
+import { proxyWithPersist } from '@/utils/storage';
 import { chatActionsFactory } from './chats';
 import { Speaker } from '@/types';
+import { RobotType } from '@/enum/robot';
 
 export type RobotId = string | number;
 export type VitsSetting = {
@@ -19,10 +20,15 @@ export type Robot = {
   description: string;
   introduction: string;
   createdDate: number;
+  type: RobotType;
   avatar?: string;
   vits?: VitsSetting;
+
+  claude?: {
+    channelId?: string;
+  };
 };
-export const robotsState = proxyWithPersist<{
+export const robotsState = await proxyWithPersist<{
   list: Robot[];
   openedRobots: RobotId[];
   currentRobotId?: RobotId;
@@ -59,8 +65,12 @@ export const robotsActions = {
   },
   updateRobotById: (id: RobotId, data: Partial<Omit<Robot, 'id'>>) => {
     const robot = robotsActions.getRobotById(id);
-    if (!robot) return;
-    Object.assign(robot, data);
+    for (const key in data) {
+      if (Object.prototype.hasOwnProperty.call(data, key)) {
+        // @ts-ignore
+        robot[key] = data[key];
+      }
+    }
   },
   removeRobot: (robotId: RobotId) => {
     if (robotsState.currentRobotId === robotId) {

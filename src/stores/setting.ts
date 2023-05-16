@@ -1,5 +1,8 @@
 import { useSnapshot } from 'valtio';
-import { darkMode, proxyWithPersist } from '@/utils';
+import { darkMode } from '@/utils';
+import { proxyWithPersist } from '@/utils/storage';
+import { emit } from '@tauri-apps/api/event';
+import { Events } from '@/enum/events';
 
 export const sendKeyOptions = ['Enter', 'Ctrl+Enter'] as const;
 export const modelOptions = [
@@ -11,11 +14,13 @@ export const modelOptions = [
   'gpt-3.5-turbo-0301',
 ];
 export type AppSetting = {
-  opened: boolean;
-  theme: 'light' | 'dark';
-  language: string;
-  fontSize: number;
-  avatar: string;
+  basic: {
+    opened: boolean;
+    theme: 'light' | 'dark';
+    language: string;
+    fontSize: number;
+    avatar: string;
+  };
   openAI: {
     apiKey: string;
     model: (typeof modelOptions)[number];
@@ -25,6 +30,11 @@ export type AppSetting = {
     basePath?: string;
     // chat history size
     historySize?: number;
+  };
+  claude: {
+    server?: string;
+    token?: string;
+    appId?: string;
   };
   chat: {
     sendKey: (typeof sendKeyOptions)[number];
@@ -36,29 +46,53 @@ export type AppSetting = {
     allowAudio?: boolean;
   };
 };
-export const appSettingState = proxyWithPersist<AppSetting>('appSetting', {
+
+const defaultClaude = {
+  server: 'http://localhost:3101',
+  token: '',
+  appId: '',
+};
+
+const defaultChat = {
+  sendKey: sendKeyOptions[1],
+};
+const defaultOpenAI = {
+  apiKey: '',
+  model: modelOptions[0],
+  temperature: 1.0,
+  maxTokens: 2000,
+  presencePenalty: 0.0,
+  basePath: 'https://api.openai.com/v1',
+  historySize: 10,
+};
+const defaultVits = {
+  basePath: 'http://127.0.0.1:23456',
+  allowAudio: true,
+};
+const defaultBasicSetting: AppSetting['basic'] = {
   opened: false,
   theme: 'light',
   language: 'zh-CN',
   fontSize: 14,
   avatar: '/avatars/avatar.png',
-  chat: {
-    sendKey: sendKeyOptions[1],
+};
+export const appSettingState = await proxyWithPersist<AppSetting>(
+  'appSetting',
+  {
+    basic: { ...defaultBasicSetting },
+    chat: { ...defaultChat },
+    openAI: { ...defaultOpenAI },
+    vits: { ...defaultVits },
+    claude: { ...defaultClaude },
   },
-  openAI: {
-    apiKey: '',
-    model: modelOptions[0],
-    temperature: 1.0,
-    maxTokens: 2000,
-    presencePenalty: 0.0,
-    basePath: 'https://api.openai.com/v1',
-    historySize: 10,
+  {
+    onSave: async (_, data) => {
+      await emit(Events.settingChanged, {
+        theme: data.basic.theme,
+      });
+    },
   },
-  vits: {
-    basePath: 'http://127.0.0.1:23456',
-    allowAudio: true,
-  },
-});
+);
 
 export const useAppSetting = () => {
   const setting = useSnapshot(appSettingState);
@@ -85,38 +119,39 @@ export const appSettingActions = {
     appSettingState.openAI.maxTokens = maxTokens;
   },
   setLanguage: (language: string) => {
-    appSettingState.language = language;
+    appSettingState.basic.language = language;
   },
   setTheme: (theme: 'light' | 'dark') => {
-    appSettingState.theme = theme;
+    appSettingState.basic.theme = theme;
   },
   setChatHistorySize: (historySize: number) => {
     appSettingState.openAI.historySize = historySize;
   },
   toggleTheme: () => {
-    const nextTheme = appSettingState.theme === 'light' ? 'dark' : 'light';
+    const nextTheme =
+      appSettingState.basic.theme === 'light' ? 'dark' : 'light';
     if (nextTheme === 'dark') {
       darkMode.enable();
     } else {
       darkMode.disable();
     }
-    appSettingState.theme = nextTheme;
+    appSettingState.basic.theme = nextTheme;
   },
   setPresencePenalty: (presencePenalty: number) => {
     appSettingState.openAI.presencePenalty = presencePenalty;
   },
   openSetting: () => {
-    appSettingState.opened = true;
+    appSettingState.basic.opened = true;
   },
   closeSetting: () => {
-    appSettingState.opened = false;
+    appSettingState.basic.opened = false;
   },
   toggleSetting: (opened?: boolean) => {
     if (opened !== undefined) {
-      appSettingState.opened = opened;
+      appSettingState.basic.opened = opened;
       return;
     }
-    appSettingState.opened = !appSettingState.opened;
+    appSettingState.basic.opened = !appSettingState.basic.opened;
   },
   setVitsBasePath: (basePath: string) => {
     appSettingState.vits.basePath = basePath;
@@ -126,5 +161,32 @@ export const appSettingActions = {
   },
   toggleVisAllowAudio: () => {
     appSettingState.vits.allowAudio = !appSettingState.vits.allowAudio;
+  },
+
+  setAvatar: (avatarPath: string) => {
+    appSettingState.basic.avatar = avatarPath;
+  },
+
+  resetBasicSetting: () => {
+    appSettingState.basic = { ...defaultBasicSetting };
+  },
+
+  resetOpenAISetting: () => {
+    appSettingState.openAI = { ...defaultOpenAI };
+  },
+
+  resetVitsSetting: () => {
+    appSettingState.vits = { ...defaultVits };
+  },
+
+  resetChatSetting: () => {
+    appSettingState.chat = { ...defaultChat };
+  },
+
+  updateClaudeSetting: (claude: Partial<AppSetting['claude']>) => {
+    appSettingState.claude = { ...appSettingState.claude, ...claude };
+  },
+  resetClaudeSetting: () => {
+    appSettingState.claude = { ...defaultClaude };
   },
 };

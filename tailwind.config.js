@@ -5,6 +5,9 @@ module.exports = {
     './src/components/**/*.tsx',
     './src/layouts/**/*.tsx',
   ],
+  corePlugins: {
+    preflight: false,
+  },
   theme: {
     extend: {
       keyframes: {

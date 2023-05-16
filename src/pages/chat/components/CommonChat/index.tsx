@@ -1,5 +1,6 @@
 import Search from './components/Search';
-import { GptMessageItem, askGpt } from '@/gpt';
+import { GptMessageItem } from '@/gpt';
+import { ask } from '@/services';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import ChatContainer, { ChatContainerRef } from './components/ChatContainer';
 import { useAppSetting } from '@/stores/setting';
@@ -40,66 +41,63 @@ const CommonChat = ({ className, robot }: CommonChatProps) => {
       chatActions.addMessage(systemMessage);
     }
   }, [robot.description]);
+  const scrollToBottom = () => {
+    chatContainerRef.current?.scrollToBottom();
+  };
 
   useEffect(() => {
     if (currentRobotId === robot.id && firstTimeFocusCurrentRobot.current) {
-      chatContainerRef.current?.scrollToBottom();
+      scrollToBottom();
       firstTimeFocusCurrentRobot.current = false;
     }
   }, [currentRobotId]);
 
-  const submit = async (question: string) => {
-    const submitMessage: ChatMessage = {
-      content: question,
-      timestamp: new Date().getTime(),
-      sender: 'user',
-      status: 'sent',
-    };
-    chatActions.addMessage(submitMessage);
-    chatContainerRef.current?.scrollToBottom();
-    let timestamp = new Date().getTime() + 1;
+  const sendMessage = async (
+    questionMessage: ChatMessage,
+    assistantMessage: ChatMessage,
+    isRetry = false,
+  ) => {
+    if (isRetry) {
+      chatActions.updateMessage({
+        timestamp: assistantMessage.timestamp,
+        status: 'sending',
+      });
+    }
     try {
       setLoading(true);
-      chatActions.addMessage({
-        content: '',
-        timestamp,
-        status: 'sending',
-        sender: 'assistant',
-      });
-      const _messages: GptMessageItem[] = [...messages, submitMessage]
-        .filter(
-          (message) => message.sender !== 'bot' && message.status === 'sent',
-        )
-        .map((message) => {
-          return {
-            content: message.content,
-            role: message.sender,
-          };
-        }) as GptMessageItem[];
+      const _messages = [...messages, questionMessage].filter(
+        (message) => message.sender !== 'bot' && message.status === 'sent',
+      );
       // 只取最后的historySize条
       const historySize = setting.openAI.historySize!;
       const history = _messages.slice(-historySize);
-      if (_messages[0].role === 'system' && history[0].role !== 'system') {
+      if (_messages[0].sender === 'system' && history[0].sender !== 'system') {
         history.unshift(_messages[0]);
       }
-      const value = await askGpt(history);
+      const value = await ask({
+        platform: robot.type,
+        messages: history,
+        robot,
+      });
+      console.log(value);
       // const value = await askGpt(_messages);
       // const value = "Sorry, I don't know.";
       chatActions.updateMessage({
-        content: value,
-        timestamp,
+        content: value.text,
+        timestamp: assistantMessage.timestamp,
+        conversationId: value.conversationId,
         status: 'sent',
       });
       setLoading(false);
       if (setting.vits.allowAudio) {
         Vits.speak({
-          text: value ?? '出错了',
+          text: value.text ?? '出错了',
           length: robot.vits?.length,
           noise: robot.vits?.noise,
           id: robot.vits?.speaker?.id,
           async beforeStart() {
             // 从value文本中获取{}包裹的文字，作为mood
-            const mood = value?.match(/{(.*)}/)?.[1] ?? '';
+            const mood = value?.text?.match(/{(.*)}/)?.[1] ?? '';
             await emit('robotPlayAudioStart', { message: value, mood });
           },
           async afterEnd() {
@@ -107,18 +105,36 @@ const CommonChat = ({ className, robot }: CommonChatProps) => {
           },
         });
       }
-      chatContainerRef.current?.scrollToBottom();
+      scrollToBottom();
     } catch (err: any) {
-      console.log(err);
+      let errMsg = err.message || err;
       chatActions.updateMessage({
-        content: err.message,
-        timestamp,
+        content: errMsg,
+        timestamp: assistantMessage.timestamp,
         status: 'failed',
         sender: 'assistant',
       });
-      chatContainerRef.current?.scrollToBottom();
+      scrollToBottom();
       setLoading(false);
     }
+  };
+  const submit = async (question: string) => {
+    const questionMessage: ChatMessage = {
+      content: question,
+      timestamp: new Date().getTime(),
+      sender: 'user',
+      status: 'sent',
+    };
+    chatActions.addMessage(questionMessage);
+    const assistantMessage: ChatMessage = {
+      content: '',
+      timestamp: new Date().getTime() + 1,
+      status: 'sending',
+      sender: 'assistant',
+    };
+    chatActions.addMessage(assistantMessage);
+    scrollToBottom();
+    await sendMessage(questionMessage, assistantMessage);
   };
   return (
     <div className={`h-full flex ${className ?? ''}`}>
@@ -135,19 +151,24 @@ const CommonChat = ({ className, robot }: CommonChatProps) => {
                       message.sender === 'assistant' ||
                       message.sender === 'bot',
                   )
-                  .map((message) => {
+                  .map((message, index) => {
                     const isMe = message.sender === 'user';
                     return (
                       <Message
                         key={message.timestamp}
                         isMe={isMe}
+                        onDelete={() =>
+                          chatActions.deleteAssistantMessage(message.timestamp)
+                        }
+                        onRetry={() => {
+                          sendMessage(messages[index - 1], message, true);
+                        }}
                         status={message.status}
                         content={message.content}
                         timestamp={message.timestamp}
                         sender={message.sender}
                         robotAvatar={robot.avatar}
-                        myAvatar={setting.avatar}
-                        name={isMe ? 'Me' : robot.name}
+                        myAvatar={setting.basic.avatar}
                       />
                     );
                   })}

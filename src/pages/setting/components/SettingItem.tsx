@@ -20,7 +20,7 @@ const SettingItem = ({
           <p className="mb-0 text-xs text-slate-500">{description}</p>
         )}
       </Col>
-      <Col className="flex flex-wrap content-center" span={10}>
+      <Col className="flex flex-wrap content-center justify-end" span={10}>
         {children}
       </Col>
     </Row>

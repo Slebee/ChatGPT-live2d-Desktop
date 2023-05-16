@@ -1,11 +1,10 @@
-import { Col, Row, Space } from 'antd';
-import { CloseOutlined, PushpinOutlined } from '@ant-design/icons';
-import { toggleWindowVisible } from '@/utils';
-import { useEffect, useState } from 'react';
-import classNames from 'classnames';
+import { Col, Row } from 'antd';
+import { useEffect } from 'react';
 import { appWindow } from '@tauri-apps/api/window';
 import { invoke } from '@tauri-apps/api';
 import { useIntl } from 'umi';
+import ExtraActions from './components/ExtraActions';
+import { setShadow } from '@/utils/shadow';
 
 export type WindowContainerProps = {
   name: string;
@@ -20,30 +19,13 @@ const WindowContainer = ({
   hasShadow = true,
   className,
 }: WindowContainerProps) => {
-  const [fixed, setFixed] = useState<boolean>(false);
   const intl = useIntl();
   const titleName = intl.formatMessage({
     id: `page.${name}.title`,
   });
-  const handleClose = () => {
-    toggleWindowVisible(name);
-  };
-  const fixedClass = classNames({
-    ['text-primary']: fixed,
-    ['border-none']: true,
-  });
-  const handleFixed = () => {
-    setFixed((fixed) => {
-      appWindow.setAlwaysOnTop(!fixed);
-      return !fixed;
-    });
-  };
   useEffect(() => {
-    async function setShadow() {
-      await invoke('set_shadow', { label: name });
-    }
     if (hasShadow) {
-      setShadow();
+      setShadow(name);
     }
   }, []);
 
@@ -54,7 +36,8 @@ const WindowContainer = ({
   return (
     <div className={`h-full w-full flex flex-col pt-8 ${className ?? ''}`}>
       <div
-        className="p-1 border-b fixed top-0 left-0 right-0"
+        className="p-1 fixed top-0 left-0 right-0 border-t-0 border-l-0 border-r-0 border-solid border-b border-gray-300"
+        // style={{ borderBottom: '1px solid #ccc' }}
         data-tauri-drag-region
       >
         <Row data-tauri-drag-region>
@@ -62,18 +45,8 @@ const WindowContainer = ({
             {/* <Avatar src="/avatars/avatar.png" className="w-5 h-5" /> */}
             <span className="ml-2">{titleName}</span>
           </Col>
-          <Col
-            span={12}
-            data-tauri-drag-region
-            className="flex flex-wrap justify-end"
-          >
-            <Space>
-              <PushpinOutlined className={fixedClass} onClick={handleFixed} />
-              <CloseOutlined
-                className="border-none mr-1"
-                onClick={handleClose}
-              />
-            </Space>
+          <Col span={12} data-tauri-drag-region>
+            <ExtraActions windowName={name} />
           </Col>
         </Row>
       </div>

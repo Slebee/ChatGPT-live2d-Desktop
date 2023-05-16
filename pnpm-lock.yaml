@@ -1,6 +1,7 @@
 lockfileVersion: 5.4
 
 specifiers:
+  '@ant-design/cssinjs': ^1.9.1
   '@ant-design/icons': ^5.0.1
   '@formkit/auto-animate': 1.0.0-beta.6
   '@pixi/app': 6.5.2
@@ -58,11 +59,13 @@ specifiers:
   stats.js: ^0.17.0
   tailwindcss: ^3
   tauri-plugin-positioner-api: 0.2.7
+  tauri-plugin-store-api: github:tauri-apps/tauri-plugin-store
   typescript: ^5.0.0
   umi: ^4.0.64
   valtio: ^1.10.4
 
 dependencies:
+  '@ant-design/cssinjs': registry.npmjs.org/@ant-design/cssinjs/1.9.1_biqbaboplfbrettd7655fr4n2y
   '@ant-design/icons': registry.npmjs.org/@ant-design/icons/5.0.1_biqbaboplfbrettd7655fr4n2y
   '@formkit/auto-animate': registry.npmjs.org/@formkit/auto-animate/1.0.0-beta.6
   '@pixi/app': registry.npmjs.org/@pixi/app/6.5.2_nfw4i7eppznbhutavfkh6cqma4
@@ -112,6 +115,7 @@ dependencies:
   react-dom: registry.npmjs.org/react-dom/18.2.0_react@18.2.0
   stats.js: registry.npmjs.org/stats.js/0.17.0
   tauri-plugin-positioner-api: registry.npmjs.org/tauri-plugin-positioner-api/0.2.7
+  tauri-plugin-store-api: github.com/tauri-apps/tauri-plugin-store/0558a1f6c869ae0afdb0181dfa1ea31be8cf4893
   umi: registry.npmjs.org/umi/4.0.66_k6fd4a464sj4lmxcminr3dcayi
   valtio: registry.npmjs.org/valtio/1.10.4_react@18.2.0
 
@@ -127,6 +131,14 @@ devDependencies:
   typescript: registry.npmjs.org/typescript/5.0.4
 
 packages:
+
+  github.com/tauri-apps/tauri-plugin-store/0558a1f6c869ae0afdb0181dfa1ea31be8cf4893:
+    resolution: {tarball: https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/0558a1f6c869ae0afdb0181dfa1ea31be8cf4893}
+    name: tauri-plugin-store-api
+    version: 0.0.0
+    dependencies:
+      '@tauri-apps/api': registry.npmjs.org/@tauri-apps/api/1.2.0
+    dev: false
 
   registry.npmjs.org/@ahooksjs/use-request/2.8.15_react@18.2.0:
     resolution: {integrity: sha512-xhVaM4fyIiAMdVFuuU5i3CFUdFa/IblF+fvITVMFaUEO3w/V5tVCAF6WIA3T03n1/RPuzRkA7Ao1PFtSGtGelw==, registry: https://registry.npmjs.com/, tarball: https://registry.npmjs.org/@ahooksjs/use-request/-/use-request-2.8.15.tgz}

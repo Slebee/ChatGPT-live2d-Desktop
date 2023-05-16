@@ -12,7 +12,7 @@ PIXI.settings.PREFER_ENV = PIXI.ENV.WEBGL_LEGACY;
 //@ts-ignore
 window.PIXI = PIXI;
 (window as any).App = App;
-if (appSettingState.theme === 'dark') {
+if (appSettingState.basic.theme === 'dark') {
   darkMode.enable();
 } else {
   darkMode.disable();

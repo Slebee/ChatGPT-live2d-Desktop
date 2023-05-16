@@ -4,6 +4,7 @@ export default defineConfig({
   routes: [
     { path: '/', component: 'chat' },
     { path: '/chat', component: 'chat' },
+    { path: '/setting', component: 'setting' },
     { path: '/live2d', component: 'live2d' },
   ],
 

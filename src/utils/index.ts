@@ -15,7 +15,6 @@ import {
   disable as disableDarkMode,
 } from 'darkreader';
 import { windowConfig } from '@/config/window';
-import { proxy, subscribe } from 'valtio';
 
 // debounce
 export function debounce(func: Function, wait: number) {
@@ -67,12 +66,8 @@ export const showWindow = async (
 ) => {
   const target = WebviewWindow.getByLabel(name);
   if (target) {
-    if (initWindowOptions?.x && initWindowOptions?.y) {
-      await target.setPosition(
-        new LogicalPosition(initWindowOptions.x, initWindowOptions.y),
-      );
-    }
     await target.show();
+    await target.setFocus();
   } else {
     openNewWindow(name, { ...windowConfig[name], ...initWindowOptions });
   }
@@ -90,7 +85,7 @@ export const toggleWindowVisible = async (
     if (await target.isVisible()) {
       target.hide();
     } else {
-      target.show();
+      await target.show();
     }
   } else {
     console.log('openNewWindow', name, windowConfig[name], initWindowOptions);
@@ -111,18 +106,26 @@ export const darkMode = {
   },
 };
 
-export function proxyWithPersist<T extends object>(name: string, data: T) {
-  const dataStr = localStorage.getItem(name);
-  if (dataStr) {
-    const d = JSON.parse(dataStr);
-    Object.assign(data, d);
+export const deepMerge = <T extends object>(target: T, source: T): T => {
+  const isObject = (obj: any) => obj && typeof obj === 'object';
+  if (!isObject(target) || !isObject(source)) {
+    return source;
   }
-  const p = proxy<T>(data);
-  const save = debounce((name: string, d: T) => {
-    localStorage.setItem(name, JSON.stringify(d));
-  }, 500);
-  subscribe(p, () => {
-    save(name, p);
+  Object.keys(source).forEach((key) => {
+    // @ts-ignore
+    const targetValue = target[key];
+    // @ts-ignore
+    const sourceValue = source[key];
+    if (Array.isArray(targetValue) && Array.isArray(sourceValue)) {
+      // @ts-ignore
+      target[key] = targetValue.concat(sourceValue);
+    } else if (isObject(targetValue) && isObject(sourceValue)) {
+      // @ts-ignore
+      target[key] = deepMerge(Object.assign({}, targetValue), sourceValue);
+    } else {
+      // @ts-ignore
+      target[key] = sourceValue;
+    }
   });
-  return p;
-}
+  return target;
+};

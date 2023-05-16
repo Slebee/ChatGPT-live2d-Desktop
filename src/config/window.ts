@@ -10,4 +10,8 @@ export const windowConfig: Record<string, WindowOptions> = {
     transparent: true,
     fileDropEnabled: false,
   },
+  setting: {
+    url: '/setting',
+    decorations: false,
+  },
 };

@@ -1,10 +1,12 @@
 export default {
   'page.chat.title': 'Chat',
+  'page.setting.title': 'Setting',
   'page.live2d-model-setting.title': 'Live2D Model Setting',
 
   /** 基础设置 */
   'setting.baseSetting': 'Base Setting',
   'setting.title': 'Setting',
+  'setting.avatar': 'Avatar',
   'setting.sendKey': 'Send Key',
   'setting.language': 'Language',
 
@@ -35,6 +37,7 @@ export default {
   'chat.form.editChat': 'Edit Chat',
   'chat.form.name': 'Name',
   'chat.form.avatar': 'Avatar',
+  'chat.form.robotType': 'Robot Type',
   'chat.form.voice': 'Voice',
   'chat.form.vits.noise': 'Noise',
   'chat.form.vits.noise.description':
@@ -47,4 +50,24 @@ export default {
   'chat.form.missingApiKey': 'Please set your OpenAI API Key in Setting',
   'chat.form.inputAreaPlaceholder': 'Type something here...',
   'chat.form.gotoSetApiKey': 'Setting',
+  'chat.form.claude.channelId': 'Channel ID',
+
+  /** live2d */
+  'setting.live2dSetting': 'Live2D 设置',
+
+  /** claude */
+  'setting.claudeSetting': 'Claude Setting',
+  'setting.claude.server': 'Server',
+  'setting.claude.server.description': 'Local proxy server address',
+  'setting.claude.token': 'Token',
+  'setting.claude.token.description': 'User Token',
+  'setting.claude.appId': 'App ID',
+  'setting.claude.appId.description': 'App ID',
+  'setting.claude.channelId': 'Channel ID',
+  'setting.claude.channelId.description':
+    'if exists, will join the channel, otherwise create a new channel',
+  'setting.about': 'About',
+
+  /** file */
+  'setting.fileManage': 'File Manage',
 };

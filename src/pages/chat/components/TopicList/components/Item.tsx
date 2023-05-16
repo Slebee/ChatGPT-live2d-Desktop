@@ -1,3 +1,4 @@
+import { getRobotTag } from '@/pages/chat/_util';
 import { Robot, RobotId } from '@/pages/chat/stores/robots';
 import { Avatar } from 'antd';
 import {
@@ -40,9 +41,9 @@ const Item = ({ id, robot, active, onRemove, onClick }: ItemProps) => {
       >
         <Avatar size="large" className="flex-none mr-2" src={robot.avatar} />
         <div className="flex-auto truncate">
-          <h2>{robot.name}</h2>
+          <div>{robot.name}</div>
           <div className="text-xs text-slate-500 truncate w-full text-truncate">
-            {robot.introduction}
+            {getRobotTag(robot.type)}
           </div>
         </div>
         <Menu id={id}>

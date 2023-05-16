@@ -10,25 +10,24 @@ import {
   FullscreenOutlined,
   HeartOutlined,
 } from '@ant-design/icons';
-import { Avatar, Modal } from 'antd';
+import { Avatar, App } from 'antd';
 import AddTopicModal from '../../TopicList/components/AddTopicModal';
 import { toggleWindowVisible } from '@/utils';
 import { FormattedMessage } from 'umi';
 import { appSettingActions, useAppSetting } from '@/stores/setting';
+import { getRobotTag } from '@/pages/chat/_util';
 
 const ChatHeader = () => {
+  const { modal } = App.useApp();
   const { currentRobotId, fullScreenRobot, robots } = useRobots();
   const [setting] = useAppSetting();
   const currentRobot = robots.find((robot) => robot.id === currentRobotId);
   const handleClean = () => {
-    Modal.confirm({
+    modal.confirm({
       title: '清空聊天记录',
       content: '确定要清空聊天记录吗？',
       onOk: () => {
         if (currentRobotId) chatActionsFactory(currentRobotId).cleanMessages();
-      },
-      okButtonProps: {
-        className: 'bg-sky-500',
       },
     });
   };
@@ -40,15 +39,16 @@ const ChatHeader = () => {
         src={currentRobot?.avatar}
       />
       <div className="flex-auto truncate w-9 h-9 ">
-        <h2 className="text-sm font-bold text-slate-700">
-          {currentRobot?.name}
+        <h2 className="text-sm">
+          <span className="mr-2">{currentRobot?.name}</span>
+          <span className="font-normal">{getRobotTag(currentRobot!.type)}</span>
         </h2>
         <div className="text-xs text-slate-500 truncate w-full text-truncate">
           {currentRobot?.description}
         </div>
       </div>
       <Icon onClick={appSettingActions.toggleVisAllowAudio}>
-        {setting.vits.allowAudio ? <AudioMutedOutlined /> : <AudioOutlined />}
+        {setting.vits.allowAudio ? <AudioOutlined /> : <AudioMutedOutlined />}
       </Icon>
       <Icon
         onClick={() => {

@@ -1,5 +1,6 @@
-import { appSettingActions, useAppSetting } from '@/stores/setting';
-import { Input, Modal, message } from 'antd';
+import { useAppSetting } from '@/stores/setting';
+import { showWindow } from '@/utils';
+import { App, Input, message } from 'antd';
 import { useState } from 'react';
 import { useIntl } from 'umi';
 
@@ -8,8 +9,9 @@ type SearchProps = {
   loading?: boolean;
   onClose?: () => void;
 };
-export default ({ onSubmit }: SearchProps) => {
+export default ({ onSubmit, loading }: SearchProps) => {
   const [value, setValue] = useState<string>('');
+  const { modal } = App.useApp();
   const [setting] = useAppSetting();
   const intl = useIntl();
   const missingApiKeyMsg = intl.formatMessage({
@@ -23,7 +25,7 @@ export default ({ onSubmit }: SearchProps) => {
   });
   const submit = () => {
     if (!setting.openAI.apiKey) {
-      Modal.confirm({
+      modal.confirm({
         title: 'Tips',
         content: missingApiKeyMsg,
         centered: true,
@@ -32,7 +34,7 @@ export default ({ onSubmit }: SearchProps) => {
           className: 'bg-sky-500',
         },
         onOk: () => {
-          appSettingActions.toggleSetting();
+          showWindow('setting');
         },
       });
       return;
@@ -49,7 +51,14 @@ export default ({ onSubmit }: SearchProps) => {
           setValue(e.target.value);
         }}
         className="bg-slate-50 border-none p-2 flex-auto"
+        style={{
+          resize: 'none',
+        }}
         onKeyDown={(e) => {
+          if (loading) {
+            message.warning('Please wait for the current request to complete');
+            return;
+          }
           if (setting.chat.sendKey === 'Enter' && e.key === 'Enter') {
             submit();
           } else if (

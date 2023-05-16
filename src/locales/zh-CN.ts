@@ -1,10 +1,12 @@
 export default {
   'page.chat.title': '聊天',
+  'page.setting.title': '设置',
   'page.live2d-model-setting.title': 'Live2D模型设置',
 
   /** 基础设置 */
   'setting.baseSetting': '基础设置',
   'setting.title': '设置',
+  'setting.avatar': '头像',
   'setting.sendKey': '发送键',
   'setting.language': '语言',
 
@@ -32,6 +34,7 @@ export default {
   'chat.form.editChat': '修改',
   'chat.form.name': '名字',
   'chat.form.avatar': '头像',
+  'chat.form.robotType': '类型',
   'chat.form.voice': '声音',
   'chat.form.vits.noise': '噪声',
   'chat.form.vits.noise.description': '一般来说，值越低越莫得感情',
@@ -43,4 +46,24 @@ export default {
   'chat.form.missingApiKey': '请先设置你的OpenAI API Key',
   'chat.form.inputAreaPlaceholder': '在这里输入...',
   'chat.form.gotoSetApiKey': '设置',
+  'chat.form.claude.channelId': '频道ID',
+
+  /** live2d */
+  'setting.live2dSetting': 'Live2D 设置',
+
+  /** claude */
+  'setting.claudeSetting': 'Claude 设置',
+  'setting.claude.server': '服务地址',
+  'setting.claude.server.description': 'Claude本地代理服务地址',
+  'setting.claude.token': 'Token',
+  'setting.claude.token.description': 'Claude的User Token',
+  'setting.claude.appId': 'App ID',
+  'setting.claude.appId.description': 'Claude的成员ID',
+  'setting.claude.channelId': 'Channel ID',
+  'setting.claude.channelId.description':
+    'Claude的频道,如果没有会自动创建，有则加入',
+  'setting.about': '关于',
+
+  /** file */
+  'setting.fileManage': '文件管理',
 };

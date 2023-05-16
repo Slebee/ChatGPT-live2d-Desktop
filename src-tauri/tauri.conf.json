@@ -8,7 +8,7 @@
   },
   "package": {
     "productName": "CatGpt",
-    "version": "0.1.0"
+    "version": "0.2.0"
   },
   "tauri": {
     "systemTray": {
@@ -19,7 +19,7 @@
     "allowlist": {
       "fs": {
         "all": true,
-        "scope": ["$RESOURCE/*", "$DATA/*", "$APP/*"]
+        "scope": ["**"]
       },
       "dialog": {
         "all": true
@@ -34,6 +34,10 @@
         "all": true,
         "request": true,
         "scope": ["https://**", "http://**"]
+      },
+      "protocol": {
+        "asset": true,
+        "assetScope": ["**"]
       }
     },
     "bundle": {

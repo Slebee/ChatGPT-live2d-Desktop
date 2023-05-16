@@ -1,5 +1,5 @@
 import { useSnapshot } from 'valtio';
-import { proxyWithPersist } from '@/utils';
+import { proxyWithPersist } from '@/utils/storage';
 import { RobotId } from './robots';
 
 export type ChatMessage = {
@@ -8,12 +8,14 @@ export type ChatMessage = {
   // receiver: string;
   content: string;
   status: 'sending' | 'sent' | 'failed';
+
+  conversationId?: string;
 };
 
 export type ChatHistory = {
   [robotId: string]: ChatMessage[];
 };
-const chatHistoryState = proxyWithPersist<ChatHistory>('chatHistory', {});
+const chatHistoryState = await proxyWithPersist<ChatHistory>('chatHistory', {});
 
 export const useChats = () => {
   const history = useSnapshot(chatHistoryState);
@@ -59,6 +61,17 @@ export const chatActionsFactory = (robotId: string | number) => {
       chatHistoryState[robotId] = chatHistoryState[robotId]
         .filter((item) => item.sender === 'system')
         .map((item) => ({ ...item, timestamp: new Date().getTime() }));
+    },
+    deleteAssistantMessage: (timestamp: ChatMessage['timestamp']) => {
+      if (chatHistoryState[robotId]) {
+        // 删除当前信息与上一条user的信息
+        const index = chatHistoryState[robotId].findIndex(
+          (item) => item.timestamp === timestamp,
+        );
+        if (index > 0) {
+          chatHistoryState[robotId].splice(index - 1, 2);
+        }
+      }
     },
     updateSystemMessage: (message: Partial<ChatMessage>) => {
       if (chatHistoryState[robotId]) {

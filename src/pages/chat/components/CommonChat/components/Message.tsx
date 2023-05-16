@@ -1,4 +1,4 @@
-import { Avatar, Col, Row } from 'antd';
+import { Avatar, Col, Row, Space } from 'antd';
 import styles from './Message.less';
 import MarkdownIt from 'markdown-it';
 //@ts-ignore
@@ -10,9 +10,11 @@ import classNames from 'classnames';
 import { ChatMessage } from '@/pages/chat/stores/chats';
 export type MessageProps = ChatMessage & {
   isMe?: boolean;
-  name: string;
   robotAvatar?: string;
   myAvatar?: string;
+
+  onDelete?: () => void;
+  onRetry?: () => void;
 };
 
 const Loading = () => (
@@ -26,12 +28,13 @@ const Loading = () => (
   </div>
 );
 export default ({
-  name,
   content,
   isMe,
   robotAvatar,
   myAvatar,
   status,
+  onDelete,
+  onRetry,
 }: MessageProps) => {
   const { copied, copy } = useClipboard({
     source: '',
@@ -92,7 +95,19 @@ export default ({
   });
   const contentCol = (
     <Col className={contentClass} flex="auto">
-      <div className={styles.userName}>{name}</div>
+      {!isMe && status === 'failed' && (
+        <div className="pb-1">
+          <Space>
+            <a className="text-[#cccccc] text-sm" onClick={onDelete}>
+              删除
+            </a>
+            <a className="text-[#cccccc] text-sm" onClick={onRetry}>
+              重发
+            </a>
+          </Space>
+        </div>
+      )}
+
       <div
         className={classNames({
           'text-slate-700': status !== 'failed',

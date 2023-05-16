@@ -89,7 +89,8 @@ pub fn handler(app: &AppHandle, event: &SystemTrayEvent) {
                 }
             }
             "quit" => {
-                std::process::exit(0);
+                app.exit(0);
+                // std::process::exit(0);
             }
             _ => {}
         },
