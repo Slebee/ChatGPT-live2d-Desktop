@@ -5,11 +5,7 @@ export async function ping(url: string): Promise<boolean> {
     return false;
   }
 }
-import {
-  LogicalPosition,
-  WebviewWindow,
-  WindowOptions,
-} from '@tauri-apps/api/window';
+import { WebviewWindow, WindowOptions } from '@tauri-apps/api/window';
 import {
   enable as enableDarkMode,
   disable as disableDarkMode,
@@ -81,14 +77,14 @@ export const toggleWindowVisible = async (
   initWindowOptions?: WindowOptions,
 ) => {
   const target = WebviewWindow.getByLabel(name);
+  const isVisible = await target?.isVisible();
   if (target) {
-    if (await target.isVisible()) {
+    if (isVisible) {
       target.hide();
     } else {
       await target.show();
     }
   } else {
-    console.log('openNewWindow', name, windowConfig[name], initWindowOptions);
     openNewWindow(name, { ...windowConfig[name], ...initWindowOptions });
   }
 };
@@ -129,3 +125,45 @@ export const deepMerge = <T extends object>(target: T, source: T): T => {
   });
   return target;
 };
+
+export function disableMenu() {
+  if (window.location.hostname !== 'tauri.localhost') {
+    return;
+  }
+
+  document.addEventListener(
+    'contextmenu',
+    (e) => {
+      const target = e.target as HTMLElement;
+      // 判断是否为 input 或者 textarea 或者 a 标签 或者 class包含 select-text 及其子元素
+      if (
+        target.tagName !== 'INPUT' &&
+        target.tagName !== 'TEXTAREA' &&
+        target.tagName !== 'A' &&
+        !target.classList.contains('select-text') &&
+        !target.closest('.select-text')
+      ) {
+        e.preventDefault();
+        return false;
+      }
+    },
+    { capture: true },
+  );
+
+  // document.addEventListener(
+  //   'selectstart',
+  //   (e) => {
+  //     // 判断是否为 input 或者 textarea
+  //     const target = e.target as HTMLElement;
+  //     if (
+  //       target.tagName !== 'INPUT' &&
+  //       target.tagName !== 'TEXTAREA' &&
+  //       target.tagName !== 'A'
+  //     ) {
+  //       e.preventDefault();
+  //       return false;
+  //     }
+  //   },
+  //   { capture: true },
+  // );
+}

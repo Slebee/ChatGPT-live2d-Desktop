@@ -9,6 +9,7 @@ import {
   Select,
   Slider,
   Space,
+  Switch,
   Tooltip,
 } from 'antd';
 import { FormattedMessage } from 'umi';
@@ -30,6 +31,9 @@ type FormValues = {
   vitsLength: number;
   type: RobotType;
   channelId: string;
+  baiduTranslateFrom: string;
+  baiduTranslateTo: string;
+  baiduTranslateEnabled: boolean;
 };
 type AddTopicModalProps = {
   children: React.ReactNode;
@@ -109,9 +113,15 @@ const AddTopicModal = ({
                   speaker,
                   noise: values.vitsNoise,
                   length: values.vitsLength,
+                  enabled: true,
                 },
                 claude: {
                   channelId: values.channelId,
+                },
+                baiduTranslate: {
+                  enabled: values.baiduTranslateEnabled,
+                  from: values.baiduTranslateFrom,
+                  to: values.baiduTranslateTo,
                 },
               };
               onSubmit?.();
@@ -220,11 +230,14 @@ const AddTopicModal = ({
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
-                          Vits.speak({
+                          const vitsSpeaker = new Vits({
                             id: speaker.id,
                             noise: form.getFieldValue('vitsNoise'),
                             length: form.getFieldValue('vitsLength'),
                             text: `你好，我是${speaker.name}`,
+                          });
+                          vitsSpeaker.speak({
+                            translate: false,
                           });
                         }}
                       >
@@ -276,6 +289,49 @@ const AddTopicModal = ({
                     initialValue={initialValues?.vits?.length || 1.2}
                   >
                     <Slider min={0.1} max={2.0} step={0.1} className="w-full" />
+                  </Form.Item>
+                  <Form.Item
+                    label={
+                      <FormattedMessage id="chat.form.baiduTranslate.enabled" />
+                    }
+                    name="baiduTranslateEnabled"
+                    initialValue={
+                      initialValues?.baiduTranslate?.enabled ?? false
+                    }
+                    valuePropName="checked"
+                  >
+                    <Switch />
+                  </Form.Item>
+                  <Form.Item noStyle dependencies={['baiduTranslateEnabled']}>
+                    {({ getFieldValue }) => {
+                      if (!getFieldValue('baiduTranslateEnabled')) return null;
+                      return (
+                        <>
+                          <Form.Item
+                            label={
+                              <FormattedMessage id="chat.form.baiduTranslate.from" />
+                            }
+                            name="baiduTranslateFrom"
+                            initialValue={
+                              initialValues?.baiduTranslate?.from || 'zh'
+                            }
+                          >
+                            <Input />
+                          </Form.Item>
+                          <Form.Item
+                            label={
+                              <FormattedMessage id="chat.form.baiduTranslate.to" />
+                            }
+                            name="baiduTranslateTo"
+                            initialValue={
+                              initialValues?.baiduTranslate?.to || 'zh'
+                            }
+                          >
+                            <Input />
+                          </Form.Item>
+                        </>
+                      );
+                    }}
                   </Form.Item>
                 </>
               );

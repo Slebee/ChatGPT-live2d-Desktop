@@ -34,7 +34,7 @@ const AvatarSelect = ({ value, onChange, singleMode }: AvatarSelectProps) => {
       filters: [
         {
           name: 'Image',
-          extensions: ['png', 'jpeg'],
+          extensions: ['png', 'jpeg', 'jpg'],
         },
       ],
     });

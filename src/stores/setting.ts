@@ -42,8 +42,14 @@ export type AppSetting = {
 
   vits: {
     basePath?: string;
+    folderPath?: string;
     // allow play audio
     allowAudio?: boolean;
+  };
+
+  baiduTranslate: {
+    appid?: string;
+    key?: string;
   };
 };
 
@@ -76,6 +82,10 @@ const defaultBasicSetting: AppSetting['basic'] = {
   fontSize: 14,
   avatar: '/avatars/avatar.png',
 };
+const defaultBaiduTranslate = {
+  appid: undefined,
+  key: undefined,
+};
 export const appSettingState = await proxyWithPersist<AppSetting>(
   'appSetting',
   {
@@ -84,49 +94,78 @@ export const appSettingState = await proxyWithPersist<AppSetting>(
     openAI: { ...defaultOpenAI },
     vits: { ...defaultVits },
     claude: { ...defaultClaude },
+    baiduTranslate: { ...defaultBaiduTranslate },
   },
   {
-    onSave: async (_, data) => {
-      await emit(Events.settingChanged, {
-        theme: data.basic.theme,
-      });
+    onSave: async () => {
+      await emit(Events.settingChanged);
     },
   },
 );
 
 export const useAppSetting = () => {
-  const setting = useSnapshot(appSettingState);
+  // must use sync mode. visit https://github.com/pmndrs/valtio/issues/270
+  const setting = useSnapshot(appSettingState, { sync: true });
   return [setting];
 };
 
 export const appSettingActions = {
-  setSendKey: (sendKey: (typeof sendKeyOptions)[number]) => {
-    appSettingState.chat.sendKey = sendKey;
+  /** basic */
+  updateBasicSetting: (basic: Partial<AppSetting['basic']>) => {
+    appSettingState.basic = {
+      ...appSettingState.basic,
+      ...basic,
+    };
   },
-  setBathPath: (basePath: string) => {
-    appSettingState.openAI.basePath = basePath;
+  resetBasicSetting: () => {
+    appSettingState.basic = { ...defaultBasicSetting };
   },
-  setModel: (model: (typeof modelOptions)[number]) => {
-    appSettingState.openAI.model = model;
+
+  /** claude */
+  updateClaudeSetting: (claude: Partial<AppSetting['claude']>) => {
+    appSettingState.claude = { ...appSettingState.claude, ...claude };
   },
-  setApiKey: (apiKey: string) => {
-    appSettingState.openAI.apiKey = apiKey;
+  resetClaudeSetting: () => {
+    appSettingState.claude = { ...defaultClaude };
   },
-  setTemperature: (temperature: number) => {
-    appSettingState.openAI.temperature = temperature;
+
+  /** Vits */
+  updateVisSetting: (vits: Partial<AppSetting['vits']>) => {
+    appSettingState.vits = { ...appSettingState.vits, ...vits };
   },
-  setMaxTokens: (maxTokens: number) => {
-    appSettingState.openAI.maxTokens = maxTokens;
+  resetVitsSetting: () => {
+    appSettingState.vits = { ...defaultVits };
   },
-  setLanguage: (language: string) => {
-    appSettingState.basic.language = language;
+
+  /** chat */
+  updateChatSetting: (chat: Partial<AppSetting['chat']>) => {
+    appSettingState.chat = { ...appSettingState.chat, ...chat };
   },
-  setTheme: (theme: 'light' | 'dark') => {
-    appSettingState.basic.theme = theme;
+  resetChatSetting: () => {
+    appSettingState.chat = { ...defaultChat };
   },
-  setChatHistorySize: (historySize: number) => {
-    appSettingState.openAI.historySize = historySize;
+
+  /** openAI */
+  updateOpenAISetting: (openAI: Partial<AppSetting['openAI']>) => {
+    appSettingState.openAI = { ...appSettingState.openAI, ...openAI };
   },
+  resetOpenAISetting: () => {
+    appSettingState.openAI = { ...defaultOpenAI };
+  },
+
+  /** baiduTranslate */
+  updateBaiduTranslateSetting: (
+    baiduTranslate: Partial<AppSetting['baiduTranslate']>,
+  ) => {
+    appSettingState.baiduTranslate = {
+      ...appSettingState.baiduTranslate,
+      ...baiduTranslate,
+    };
+  },
+  resetBaiduTranslateSetting: () => {
+    appSettingState.baiduTranslate = { ...defaultBaiduTranslate };
+  },
+
   toggleTheme: () => {
     const nextTheme =
       appSettingState.basic.theme === 'light' ? 'dark' : 'light';
@@ -135,58 +174,22 @@ export const appSettingActions = {
     } else {
       darkMode.disable();
     }
-    appSettingState.basic.theme = nextTheme;
+    appSettingActions.updateBasicSetting({ theme: nextTheme });
   },
-  setPresencePenalty: (presencePenalty: number) => {
-    appSettingState.openAI.presencePenalty = presencePenalty;
-  },
+
   openSetting: () => {
-    appSettingState.basic.opened = true;
+    appSettingActions.updateBasicSetting({ opened: true });
   },
   closeSetting: () => {
-    appSettingState.basic.opened = false;
+    appSettingActions.updateBasicSetting({ opened: false });
   },
   toggleSetting: (opened?: boolean) => {
     if (opened !== undefined) {
       appSettingState.basic.opened = opened;
       return;
     }
-    appSettingState.basic.opened = !appSettingState.basic.opened;
-  },
-  setVitsBasePath: (basePath: string) => {
-    appSettingState.vits.basePath = basePath;
-  },
-  setVitsAllowAudio: (allowAudio: boolean) => {
-    appSettingState.vits.allowAudio = allowAudio;
-  },
-  toggleVisAllowAudio: () => {
-    appSettingState.vits.allowAudio = !appSettingState.vits.allowAudio;
-  },
-
-  setAvatar: (avatarPath: string) => {
-    appSettingState.basic.avatar = avatarPath;
-  },
-
-  resetBasicSetting: () => {
-    appSettingState.basic = { ...defaultBasicSetting };
-  },
-
-  resetOpenAISetting: () => {
-    appSettingState.openAI = { ...defaultOpenAI };
-  },
-
-  resetVitsSetting: () => {
-    appSettingState.vits = { ...defaultVits };
-  },
-
-  resetChatSetting: () => {
-    appSettingState.chat = { ...defaultChat };
-  },
-
-  updateClaudeSetting: (claude: Partial<AppSetting['claude']>) => {
-    appSettingState.claude = { ...appSettingState.claude, ...claude };
-  },
-  resetClaudeSetting: () => {
-    appSettingState.claude = { ...defaultClaude };
+    appSettingActions.updateBasicSetting({
+      opened: !appSettingState.basic.opened,
+    });
   },
 };

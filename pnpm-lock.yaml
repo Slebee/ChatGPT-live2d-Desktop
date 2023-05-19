@@ -32,6 +32,7 @@ specifiers:
   '@types/markdown-it': ^12.2.3
   '@types/react': ^18.0.0
   '@types/react-dom': ^18.0.0
+  '@types/spark-md5': ^3.0.2
   '@umijs/plugins': ^4.0.64
   allotment: ^1.18.1
   antd: ^5.4.0
@@ -56,6 +57,7 @@ specifiers:
   react: ^18.2.0
   react-contexify: ^6.0.0
   react-dom: ^18.2.0
+  spark-md5: ^3.0.2
   stats.js: ^0.17.0
   tailwindcss: ^3
   tauri-plugin-positioner-api: 0.2.7
@@ -93,6 +95,7 @@ dependencies:
   '@tauri-apps/api': registry.npmjs.org/@tauri-apps/api/1.2.0
   '@types/lodash-es': registry.npmjs.org/@types/lodash-es/4.17.7
   '@types/markdown-it': registry.npmjs.org/@types/markdown-it/12.2.3
+  '@types/spark-md5': registry.npmjs.org/@types/spark-md5/3.0.2
   allotment: registry.npmjs.org/allotment/1.18.1_biqbaboplfbrettd7655fr4n2y
   antd: registry.npmjs.org/antd/5.4.5_biqbaboplfbrettd7655fr4n2y
   axios: registry.npmjs.org/axios/1.3.6
@@ -113,6 +116,7 @@ dependencies:
   react: registry.npmjs.org/react/18.2.0
   react-contexify: registry.npmjs.org/react-contexify/6.0.0_biqbaboplfbrettd7655fr4n2y
   react-dom: registry.npmjs.org/react-dom/18.2.0_react@18.2.0
+  spark-md5: registry.npmjs.org/spark-md5/3.0.2
   stats.js: registry.npmjs.org/stats.js/0.17.0
   tauri-plugin-positioner-api: registry.npmjs.org/tauri-plugin-positioner-api/0.2.7
   tauri-plugin-store-api: github.com/tauri-apps/tauri-plugin-store/0558a1f6c869ae0afdb0181dfa1ea31be8cf4893
@@ -4830,6 +4834,12 @@ packages:
     resolution: {integrity: sha512-21cFJr9z3g5dW8B0CVI9g2O9beqaThGQ6ZFBqHfwhzLDKUxaqTIy3vnfah/UPkfOiF2pLq+tGz+W8RyCskuslw==, registry: https://registry.npmjs.com/, tarball: https://registry.npmjs.org/@types/semver/-/semver-7.3.13.tgz}
     name: '@types/semver'
     version: 7.3.13
+    dev: false
+
+  registry.npmjs.org/@types/spark-md5/3.0.2:
+    resolution: {integrity: sha512-82E/lVRaqelV9qmRzzJ1PKTpyrpnT7mwdneKNJB9hUtypZDMggloDfFUCIqRRx3lYRxteCwXSq9c+W71Vf0QnQ==, registry: https://registry.npmjs.com/, tarball: https://registry.npmjs.org/@types/spark-md5/-/spark-md5-3.0.2.tgz}
+    name: '@types/spark-md5'
+    version: 3.0.2
     dev: false
 
   registry.npmjs.org/@types/use-sync-external-store/0.0.3:
@@ -12854,6 +12864,12 @@ packages:
     name: source-map
     version: 0.7.4
     engines: {node: '>= 8'}
+    dev: false
+
+  registry.npmjs.org/spark-md5/3.0.2:
+    resolution: {integrity: sha512-wcFzz9cDfbuqe0FZzfi2or1sgyIrsDwmPwfZC4hiNidPdPINjeUwNfv5kldczoEAcjl9Y1L3SM7Uz2PUEQzxQw==, registry: https://registry.npmjs.com/, tarball: https://registry.npmjs.org/spark-md5/-/spark-md5-3.0.2.tgz}
+    name: spark-md5
+    version: 3.0.2
     dev: false
 
   registry.npmjs.org/spdy-transport/3.0.0:

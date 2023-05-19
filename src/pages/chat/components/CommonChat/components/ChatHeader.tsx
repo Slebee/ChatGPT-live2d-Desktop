@@ -14,13 +14,11 @@ import { Avatar, App } from 'antd';
 import AddTopicModal from '../../TopicList/components/AddTopicModal';
 import { toggleWindowVisible } from '@/utils';
 import { FormattedMessage } from 'umi';
-import { appSettingActions, useAppSetting } from '@/stores/setting';
 import { getRobotTag } from '@/pages/chat/_util';
 
 const ChatHeader = () => {
   const { modal } = App.useApp();
   const { currentRobotId, fullScreenRobot, robots } = useRobots();
-  const [setting] = useAppSetting();
   const currentRobot = robots.find((robot) => robot.id === currentRobotId);
   const handleClean = () => {
     modal.confirm({
@@ -47,8 +45,18 @@ const ChatHeader = () => {
           {currentRobot?.description}
         </div>
       </div>
-      <Icon onClick={appSettingActions.toggleVisAllowAudio}>
-        {setting.vits.allowAudio ? <AudioOutlined /> : <AudioMutedOutlined />}
+      <Icon
+        onClick={() => {
+          robotsActions.updateVits(currentRobot!.id, {
+            enabled: !currentRobot?.vits?.enabled,
+          });
+        }}
+      >
+        {currentRobot?.vits?.enabled ? (
+          <AudioOutlined />
+        ) : (
+          <AudioMutedOutlined />
+        )}
       </Icon>
       <Icon
         onClick={() => {

@@ -10,6 +10,7 @@ import ClaudeSetting from './components/ClaudeSetting';
 import About from './components/About';
 import Live2dSetting from './components/Live2dSetting';
 import FileManage from './components/FileManage';
+import BaiduTranslateSetting from './components/BaiduTranslateSetting';
 
 const Setting = () => {
   const onTabChange = () => {};
@@ -25,6 +26,9 @@ const Setting = () => {
   });
   const vitsSettingTitle = intl.formatMessage({
     id: `setting.vitsSetting`,
+  });
+  const baiduTranslateSettingTitle = intl.formatMessage({
+    id: `setting.baiduTranslateSetting`,
   });
   const live2dSettingTitle = intl.formatMessage({
     id: `setting.live2dSetting`,
@@ -89,6 +93,18 @@ const Setting = () => {
                   onClean={appSettingActions.resetVitsSetting}
                 >
                   <VitsSetting />
+                </Container>
+              ),
+            },
+            {
+              key: 'baiduTranslateSetting',
+              label: baiduTranslateSettingTitle,
+              children: (
+                <Container
+                  title={baiduTranslateSettingTitle}
+                  onClean={appSettingActions.resetBaiduTranslateSetting}
+                >
+                  <BaiduTranslateSetting />
                 </Container>
               ),
             },

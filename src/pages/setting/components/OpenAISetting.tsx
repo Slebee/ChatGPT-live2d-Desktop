@@ -17,14 +17,20 @@ const OpenAISetting = () => {
           value={openAI.apiKey}
           className="h-9 w-full"
           onChange={(e) => {
-            appSettingActions.setApiKey(e.target.value);
+            appSettingActions.updateOpenAISetting({
+              apiKey: e.target.value,
+            });
           }}
         />
       </SettingItem>
       <SettingItem label={<FormattedMessage id="setting.openAi.model" />}>
         <Select
           value={openAI.model}
-          onChange={appSettingActions.setModel}
+          onChange={(value) => {
+            appSettingActions.updateOpenAISetting({
+              model: value,
+            });
+          }}
           className="h-9 w-full"
           options={modelOptions.map((item) => ({
             label: item,
@@ -42,7 +48,9 @@ const OpenAISetting = () => {
           value={openAI.maxTokens}
           className="text-right h-9 w-full"
           onChange={(e) => {
-            appSettingActions.setMaxTokens(Number(e.target.value));
+            appSettingActions.updateOpenAISetting({
+              maxTokens: Number(e.target.value),
+            });
           }}
         />
       </SettingItem>
@@ -63,7 +71,11 @@ const OpenAISetting = () => {
           step={0.1}
           value={openAI.temperature}
           className="w-full"
-          onChange={appSettingActions.setTemperature}
+          onChange={(value) => {
+            appSettingActions.updateOpenAISetting({
+              temperature: value,
+            });
+          }}
         />
       </SettingItem>
       <SettingItem
@@ -83,7 +95,11 @@ const OpenAISetting = () => {
           step={0.1}
           value={openAI.presencePenalty}
           className="w-full"
-          onChange={appSettingActions.setPresencePenalty}
+          onChange={(value) => {
+            appSettingActions.updateOpenAISetting({
+              presencePenalty: value,
+            });
+          }}
         />
       </SettingItem>
       <SettingItem
@@ -96,7 +112,9 @@ const OpenAISetting = () => {
           value={openAI.basePath}
           className="h-9 w-full"
           onChange={(e) => {
-            appSettingActions.setBathPath(e.target.value);
+            appSettingActions.updateOpenAISetting({
+              basePath: e.target.value,
+            });
           }}
         />
       </SettingItem>
@@ -117,7 +135,11 @@ const OpenAISetting = () => {
           step={1}
           value={openAI.historySize}
           className="w-full"
-          onChange={appSettingActions.setChatHistorySize}
+          onChange={(value) => {
+            appSettingActions.updateOpenAISetting({
+              historySize: value,
+            });
+          }}
         />
       </SettingItem>
     </>

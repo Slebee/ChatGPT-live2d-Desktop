@@ -4,13 +4,13 @@ import {
   useAppSetting,
 } from '@/stores/setting';
 import { FormattedMessage, getAllLocales, setLocale } from 'umi';
-import { Select } from 'antd';
+import { Select, Switch } from 'antd';
 import SettingItem from './SettingItem';
 import AvatarSelect from '@/pages/chat/components/TopicList/components/AvatarSelect';
 
 const BasicSetting = () => {
   const [setting] = useAppSetting();
-  const { language } = setting.basic;
+  const { language, theme } = setting.basic;
   const { chat, basic } = setting;
   return (
     <>
@@ -19,7 +19,9 @@ const BasicSetting = () => {
           value={basic.avatar}
           singleMode
           onChange={(path) => {
-            appSettingActions.setAvatar(path);
+            appSettingActions.updateBasicSetting({
+              avatar: path,
+            });
           }}
         />
       </SettingItem>
@@ -27,7 +29,11 @@ const BasicSetting = () => {
         <Select
           value={chat.sendKey}
           className="w-full h-9"
-          onChange={appSettingActions.setSendKey}
+          onChange={(sendKey) => {
+            appSettingActions.updateChatSetting({
+              sendKey,
+            });
+          }}
           options={sendKeyOptions.map((item) => ({
             label: item,
             value: item,
@@ -39,13 +45,25 @@ const BasicSetting = () => {
           value={language}
           className="w-full h-9"
           onChange={(value) => {
-            appSettingActions.setLanguage(value);
+            appSettingActions.updateBasicSetting({
+              language: value,
+            });
             setLocale(value, false);
           }}
           options={getAllLocales().map((item) => ({
             label: item,
             value: item,
           }))}
+        />
+      </SettingItem>
+      <SettingItem label={<FormattedMessage id="setting.theme" />}>
+        <Switch
+          checkedChildren="黑暗"
+          unCheckedChildren="普通"
+          checked={theme === 'dark'}
+          onChange={(e) => {
+            appSettingActions.toggleTheme();
+          }}
         />
       </SettingItem>
     </>

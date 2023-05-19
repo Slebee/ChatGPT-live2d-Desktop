@@ -9,6 +9,7 @@ export default {
   'setting.avatar': '头像',
   'setting.sendKey': '发送键',
   'setting.language': '语言',
+  'setting.theme': '主题',
 
   /** OpenAI */
   'setting.openAiSetting': 'OpenAI 设置',
@@ -29,6 +30,8 @@ export default {
   'setting.vitsSetting': 'Vits 设置',
   'setting.vits.basePath': '基础路径',
   'setting.vits.basePath.description': 'Vits API接口地址的基础路径',
+  'setting.vits.folderPath': '文件夹路径',
+  'setting.vits.folderPath.description': 'Vits的文件夹路径',
 
   'chat.form.newChat': '新建聊天',
   'chat.form.editChat': '修改',
@@ -47,6 +50,9 @@ export default {
   'chat.form.inputAreaPlaceholder': '在这里输入...',
   'chat.form.gotoSetApiKey': '设置',
   'chat.form.claude.channelId': '频道ID',
+  'chat.form.baiduTranslate.from': '源语言',
+  'chat.form.baiduTranslate.to': '目标语言',
+  'chat.form.baiduTranslate.enabled': '百度翻译',
 
   /** live2d */
   'setting.live2dSetting': 'Live2D 设置',
@@ -66,4 +72,7 @@ export default {
 
   /** file */
   'setting.fileManage': '文件管理',
+
+  /** baidu translate */
+  'setting.baiduTranslateSetting': '百度翻译',
 };

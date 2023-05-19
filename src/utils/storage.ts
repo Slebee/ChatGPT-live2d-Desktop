@@ -22,7 +22,6 @@ export async function proxyWithPersist<T extends object>(
     events?.onSave?.(name, d);
   }, 500);
   subscribe(p, () => {
-    console.log(p);
     save(name, p);
   });
   return p;

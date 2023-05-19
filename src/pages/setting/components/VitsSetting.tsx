@@ -56,7 +56,9 @@ const VitsSetting = () => {
           value={vits.basePath}
           className="text-right h-9 w-full"
           onChange={(e) => {
-            appSettingActions.setVitsBasePath(e.target.value);
+            appSettingActions.updateVisSetting({
+              basePath: e.target.value,
+            });
           }}
           addonAfter={
             <Button

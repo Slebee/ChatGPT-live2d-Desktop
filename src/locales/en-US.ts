@@ -9,6 +9,7 @@ export default {
   'setting.avatar': 'Avatar',
   'setting.sendKey': 'Send Key',
   'setting.language': 'Language',
+  'setting.theme': 'Theme',
 
   /** OpenAI */
   'setting.openAiSetting': 'OpenAI Setting',
@@ -30,6 +31,8 @@ export default {
   'setting.vitsSetting': 'Vits Setting',
   'setting.vits.basePath': 'Base Path',
   'setting.vits.basePath.description': 'Vits API basePath',
+  'setting.vits.folderPath': 'Folder Path',
+  'setting.vits.folderPath.description': 'Vits Application Folder Path',
 
   'setting.openAi.presencePenalty.description':
     'A larger value increases the likelihood to talk about new topics',
@@ -51,6 +54,9 @@ export default {
   'chat.form.inputAreaPlaceholder': 'Type something here...',
   'chat.form.gotoSetApiKey': 'Setting',
   'chat.form.claude.channelId': 'Channel ID',
+  'chat.form.baiduTranslate.from': 'Source Language',
+  'chat.form.baiduTranslate.to': 'Target Language',
+  'chat.form.baiduTranslate.enabled': 'Enabled Baidu Translate',
 
   /** live2d */
   'setting.live2dSetting': 'Live2D 设置',
@@ -70,4 +76,7 @@ export default {
 
   /** file */
   'setting.fileManage': 'File Manage',
+
+  /** baidu translate */
+  'setting.baiduTranslateSetting': 'Baidu Translate',
 };

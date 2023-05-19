@@ -1,4 +1,3 @@
-import WindowContainer from '@/components/WindowContainer';
 import CommonChat from './components/CommonChat';
 import TopicList from './components/TopicList';
 // @ts-ignore
@@ -43,6 +42,7 @@ const ChatPage = () => {
       unlisten?.();
     };
   }, []);
+  const showEmpty = currentRobotId === undefined && !setting.basic.opened;
   return (
     <div className="flex w-full h-full">
       <Allotment ref={allotmentRef} defaultSizes={defaultSizes}>
@@ -60,8 +60,11 @@ const ChatPage = () => {
 
         <Allotment.Pane priority={2} className="transition-all" minSize={200}>
           <div className="w-full h-full flex flex-col">
-            <ExtraActions windowName="chat" className="p-1 pb-0 flex-auto" />
-            {currentRobotId === undefined && !setting.basic.opened ? (
+            <ExtraActions
+              windowName="chat"
+              className={`p-1 pb-0 ${showEmpty ? 'flex-none' : 'flex-auto'}`}
+            />
+            {showEmpty ? (
               <Empty className="mt-5" />
             ) : (
               <div className="w-full h-full relative transition transition-transform ">

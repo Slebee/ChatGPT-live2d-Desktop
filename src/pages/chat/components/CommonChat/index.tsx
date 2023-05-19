@@ -14,8 +14,9 @@ import {
 } from '@/pages/chat/stores/chats';
 import ChatHeader from './components/ChatHeader';
 import { Robot, useRobots } from '@/pages/chat/stores/robots';
-import { emit } from '@tauri-apps/api/event';
 import { Vits } from '@/object/tts/Vits';
+import { emit } from '@tauri-apps/api/event';
+import { Events } from '@/enum/events';
 
 export type CommonChatProps = {
   className?: string;
@@ -79,7 +80,6 @@ const CommonChat = ({ className, robot }: CommonChatProps) => {
         messages: history,
         robot,
       });
-      console.log(value);
       // const value = await askGpt(_messages);
       // const value = "Sorry, I don't know.";
       chatActions.updateMessage({
@@ -88,23 +88,13 @@ const CommonChat = ({ className, robot }: CommonChatProps) => {
         conversationId: value.conversationId,
         status: 'sent',
       });
-      setLoading(false);
-      if (setting.vits.allowAudio) {
-        Vits.speak({
-          text: value.text ?? '出错了',
-          length: robot.vits?.length,
-          noise: robot.vits?.noise,
-          id: robot.vits?.speaker?.id,
-          async beforeStart() {
-            // 从value文本中获取{}包裹的文字，作为mood
-            const mood = value?.text?.match(/{(.*)}/)?.[1] ?? '';
-            await emit('robotPlayAudioStart', { message: value, mood });
-          },
-          async afterEnd() {
-            await emit('robotPlayAudioEnd');
-          },
+      setTimeout(() => {
+        // 等待300ms是因为要等待接收消息的msg渲染后才能接收到消息
+        emit(Events.addNewReplyMessage, {
+          timestamp: assistantMessage.timestamp,
         });
-      }
+      }, 300);
+      setLoading(false);
       scrollToBottom();
     } catch (err: any) {
       let errMsg = err.message || err;
@@ -167,6 +157,7 @@ const CommonChat = ({ className, robot }: CommonChatProps) => {
                         content={message.content}
                         timestamp={message.timestamp}
                         sender={message.sender}
+                        robotId={robot.id}
                         robotAvatar={robot.avatar}
                         myAvatar={setting.basic.avatar}
                       />

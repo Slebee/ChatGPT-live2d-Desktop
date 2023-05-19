@@ -13,6 +13,14 @@ export type VitsSetting = {
 
   /** 基本就是数值越小越莫得感情, 默认0.667 */
   noise?: number;
+
+  enabled?: boolean;
+};
+
+export type BaiduTranslateSetting = {
+  enabled?: boolean;
+  from: string;
+  to: string;
 };
 export type Robot = {
   id: RobotId;
@@ -23,10 +31,10 @@ export type Robot = {
   type: RobotType;
   avatar?: string;
   vits?: VitsSetting;
-
   claude?: {
     channelId?: string;
   };
+  baiduTranslate?: BaiduTranslateSetting;
 };
 export const robotsState = await proxyWithPersist<{
   list: Robot[];
@@ -48,6 +56,10 @@ export const useRobots = () => {
     fullScreenRobot: robots.fullScreenRobot,
     filter: robots.filter,
   };
+};
+export const useRobot = (robotId: RobotId) => {
+  const robots = useSnapshot(robotsState);
+  return robots.list.find((r) => r.id === robotId);
 };
 
 export const robotsActions = {
@@ -110,9 +122,12 @@ export const robotsActions = {
   },
 
   // vits
-  setVits: (robotId: RobotId, vits: VitsSetting) => {
+  updateVits: (robotId: RobotId, vits: VitsSetting) => {
     const robot = robotsActions.getRobotById(robotId);
     if (!robot) return;
-    robot.vits = vits;
+    robot.vits = {
+      ...robot.vits,
+      ...vits,
+    };
   },
 };

@@ -8,13 +8,16 @@ import { useEventListener } from '@/hooks/useEventListener';
 import { useClipboard } from '@/hooks/useClipboard';
 import classNames from 'classnames';
 import { ChatMessage } from '@/pages/chat/stores/chats';
+import Icon from '@/components/Icon';
+import VoiceIcon from '@/components/VoiceIcon';
+import { RobotId, useRobot } from '@/pages/chat/stores/robots';
 export type MessageProps = ChatMessage & {
   isMe?: boolean;
   robotAvatar?: string;
   myAvatar?: string;
-
   onDelete?: () => void;
   onRetry?: () => void;
+  robotId?: RobotId;
 };
 
 const Loading = () => (
@@ -35,11 +38,14 @@ export default ({
   status,
   onDelete,
   onRetry,
+  robotId,
+  timestamp,
 }: MessageProps) => {
   const { copied, copy } = useClipboard({
     source: '',
     copiedDuring: 1000,
   });
+  const robot = useRobot(robotId!);
   useEventListener('click', (e) => {
     const el = e.target as HTMLElement;
     let code = null;
@@ -107,25 +113,39 @@ export default ({
           </Space>
         </div>
       )}
-
       <div
         className={classNames({
           'text-slate-700': status !== 'failed',
-          'max-w-full': true,
           [styles.contentText]: true,
+          'max-w-full': true,
           'bg-white': !isMe,
           'bg-primary text-white': isMe,
           'text-red-500': status === 'failed',
+          relative: true,
         })}
-        dangerouslySetInnerHTML={
-          status === 'sending'
-            ? undefined
-            : {
-                __html: htmlString(),
-              }
-        }
-        children={status === 'sending' ? <Loading /> : undefined}
-      />
+      >
+        <div
+          className="select-text"
+          dangerouslySetInnerHTML={
+            status === 'sending'
+              ? undefined
+              : {
+                  __html: htmlString(),
+                }
+          }
+          children={status === 'sending' ? <Loading /> : undefined}
+        />
+        {!isMe && robot?.vits?.enabled && status === 'sent' && (
+          <VoiceIcon
+            text={content}
+            length={robot?.vits?.length}
+            noise={robot?.vits?.noise}
+            speakerId={robot?.vits?.speaker?.id}
+            timestamp={timestamp}
+            translateEnabled={!!robot?.baiduTranslate?.enabled}
+          />
+        )}
+      </div>
     </Col>
   );
 
