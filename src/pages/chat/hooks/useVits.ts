@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useChat } from '../stores/chats';
 import { emit, listen } from '@tauri-apps/api/event';
 import { Events } from '@/enum/events';
+import { App } from 'antd';
 
 export enum VitsStatusEnum {
   idle = 'idle',
@@ -12,6 +13,7 @@ export enum VitsStatusEnum {
 }
 export const useVits = (robotId: RobotId) => {
   const [status, setStatus] = useState<VitsStatusEnum>(VitsStatusEnum.idle);
+  const { message } = App.useApp();
   const [runningTimestamp, setRunningTimestamp] = useState<number | null>(null);
   const vitsRef = useRef<Vits>(
     new Vits({
@@ -58,17 +60,20 @@ export const useVits = (robotId: RobotId) => {
   return {
     currentTimestamp: runningTimestamp,
     status,
-    playMessageByTimestamp: (timestamp: number, text?: string) => {
-      const message = messages.find((m) => m.timestamp === timestamp);
-      const content = text || message?.content || '';
+    playMessageByTimestamp: async (timestamp: number, text?: string) => {
+      const m = messages.find((m) => m.timestamp === timestamp);
+      const content = text || m?.content || '';
       setRunningTimestamp(timestamp);
-      vitsRef.current.stop();
       vitsRef.current.setText(content);
-      vitsRef.current.speak({
-        translate: robot?.baiduTranslate?.enabled,
-        from: robot?.baiduTranslate?.from,
-        to: robot?.baiduTranslate?.to,
-      });
+      try {
+        await vitsRef.current.speak({
+          translate: robot?.baiduTranslate?.enabled,
+          from: robot?.baiduTranslate?.from,
+          to: robot?.baiduTranslate?.to,
+        });
+      } catch (e: any) {
+        message.error(e.message);
+      }
     },
     stop: () => {
       vitsRef.current.stop();
