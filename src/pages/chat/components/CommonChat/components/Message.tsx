@@ -8,16 +8,19 @@ import { useEventListener } from '@/hooks/useEventListener';
 import { useClipboard } from '@/hooks/useClipboard';
 import classNames from 'classnames';
 import { ChatMessage } from '@/pages/chat/stores/chats';
-import Icon from '@/components/Icon';
 import VoiceIcon from '@/components/VoiceIcon';
 import { RobotId, useRobot } from '@/pages/chat/stores/robots';
+import { VitsStatusEnum } from '@/pages/chat/hooks/useVits';
 export type MessageProps = ChatMessage & {
   isMe?: boolean;
-  robotAvatar?: string;
   myAvatar?: string;
   onDelete?: () => void;
   onRetry?: () => void;
   robotId?: RobotId;
+
+  audioStatus: VitsStatusEnum;
+  onAudioPlay?: () => void;
+  onAudioPause?: () => void;
 };
 
 const Loading = () => (
@@ -33,13 +36,14 @@ const Loading = () => (
 export default ({
   content,
   isMe,
-  robotAvatar,
   myAvatar,
   status,
   onDelete,
   onRetry,
   robotId,
-  timestamp,
+  audioStatus,
+  onAudioPlay,
+  onAudioPause,
 }: MessageProps) => {
   const { copied, copy } = useClipboard({
     source: '',
@@ -86,12 +90,12 @@ export default ({
   };
   const roleCol = (
     <Col className={styles.role} flex="none">
-      <Avatar src={isMe ? myAvatar : robotAvatar} />
+      <Avatar src={isMe ? myAvatar : robot?.avatar} />
     </Col>
   );
   const fillCol = (
     <Col className={styles['null-role']} flex="none">
-      <Avatar src={isMe ? myAvatar : robotAvatar} />
+      <Avatar src={isMe ? myAvatar : robot?.avatar} />
     </Col>
   );
 
@@ -137,12 +141,9 @@ export default ({
         />
         {!isMe && robot?.vits?.enabled && status === 'sent' && (
           <VoiceIcon
-            text={content}
-            length={robot?.vits?.length}
-            noise={robot?.vits?.noise}
-            speakerId={robot?.vits?.speaker?.id}
-            timestamp={timestamp}
-            translateEnabled={!!robot?.baiduTranslate?.enabled}
+            status={audioStatus}
+            onPlay={onAudioPlay}
+            onPaused={onAudioPause}
           />
         )}
       </div>

@@ -3,6 +3,8 @@ import { robotsActions, useRobots } from '@/pages/chat/stores/robots';
 import Item from './components/Item';
 
 import { appSettingActions } from '@/stores/setting';
+import { emit } from '@tauri-apps/api/event';
+import { Events } from '@/enum/events';
 
 export type TopicListProps = {};
 const TopicList = ({}: TopicListProps) => {
@@ -25,13 +27,15 @@ const TopicList = ({}: TopicListProps) => {
           return (
             <Item
               key={robot.id}
-              id={robot.id}
               robot={robot}
               active={robot.id === currentRobotId}
-              onClick={() => {
+              onClick={async () => {
                 robotsActions.setCurrentRobotId(robot.id);
                 robotsActions.addOpenedRobot(robot.id);
                 appSettingActions.toggleSetting(false);
+                await emit(Events.currentRobotChanged, {
+                  robotId: robot.id,
+                });
               }}
               onRemove={() => {
                 robotsActions.removeRobot(robot.id);

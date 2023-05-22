@@ -1,5 +1,5 @@
 import { getRobotTag } from '@/pages/chat/_util';
-import { Robot, RobotId } from '@/pages/chat/stores/robots';
+import { Robot, RobotId, useRobot } from '@/pages/chat/stores/robots';
 import { Avatar } from 'antd';
 import {
   Menu,
@@ -11,13 +11,12 @@ import {
 type ItemProps = {
   robot: Robot;
   active: boolean;
-  id: RobotId;
   onClick: (robotId: RobotId) => void;
   onRemove: (robotId: RobotId) => void;
 };
-const Item = ({ id, robot, active, onRemove, onClick }: ItemProps) => {
+const Item = ({ robot, active, onRemove, onClick }: ItemProps) => {
   const { show } = useContextMenu({
-    id,
+    id: robot.id,
   });
 
   return (
@@ -46,7 +45,7 @@ const Item = ({ id, robot, active, onRemove, onClick }: ItemProps) => {
             {getRobotTag(robot.type)}
           </div>
         </div>
-        <Menu id={id}>
+        <Menu id={robot.id}>
           <MenuItem
             id="delete"
             onClick={({ id, event, props }) => {

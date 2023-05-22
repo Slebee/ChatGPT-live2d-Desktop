@@ -238,6 +238,8 @@ const AddTopicModal = ({
                           });
                           vitsSpeaker.speak({
                             translate: false,
+                            from: 'zh',
+                            to: 'zh',
                           });
                         }}
                       >

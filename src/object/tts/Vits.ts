@@ -81,7 +81,7 @@ export class Vits {
     this.text = text;
   }
 
-  async speak({ translate = false }) {
+  async speak({ translate = false, from = 'zh', to = 'zh' }) {
     if (Vits.getRunningInstance() !== this) {
       Vits.clearRunningInstance();
       Vits.setRunningInstance(this);
@@ -108,8 +108,8 @@ export class Vits {
 
       const baiduTranslator = new BaiduTranslator({
         q: msg,
-        from: 'zh',
-        to: 'jp',
+        from,
+        to,
         appid: appSettingState.baiduTranslate.appid,
         key: appSettingState.baiduTranslate.key,
       });
@@ -121,6 +121,7 @@ export class Vits {
       }
     }
     this.audio.src = `${appSettingState.vits?.basePath}/voice?text=${msg}&id=${this.id}&noise=${this.noise}&length=${this.length}`;
+    this.audio;
     // 等待音频加载完毕
     this.audio.onloadedmetadata = () => {
       // 播放音频

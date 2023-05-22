@@ -1,5 +1,4 @@
 import Search from './components/Search';
-import { GptMessageItem } from '@/gpt';
 import { ask } from '@/services';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import ChatContainer, { ChatContainerRef } from './components/ChatContainer';
@@ -14,9 +13,7 @@ import {
 } from '@/pages/chat/stores/chats';
 import ChatHeader from './components/ChatHeader';
 import { Robot, useRobots } from '@/pages/chat/stores/robots';
-import { Vits } from '@/object/tts/Vits';
-import { emit } from '@tauri-apps/api/event';
-import { Events } from '@/enum/events';
+import { VitsStatusEnum, useVits } from '../../hooks/useVits';
 
 export type CommonChatProps = {
   className?: string;
@@ -31,6 +28,9 @@ const CommonChat = ({ className, robot }: CommonChatProps) => {
   const { currentRobotId } = useRobots();
   const chatContainerRef = useRef<ChatContainerRef>(null);
   const [loading, setLoading] = useState(false);
+  const { currentTimestamp, status, playMessageByTimestamp, stop } = useVits(
+    robot.id,
+  );
   useEffect(() => {
     const systemMessage: ChatMessage = {
       content: robot.description,
@@ -88,12 +88,9 @@ const CommonChat = ({ className, robot }: CommonChatProps) => {
         conversationId: value.conversationId,
         status: 'sent',
       });
-      setTimeout(() => {
-        // 等待300ms是因为要等待接收消息的msg渲染后才能接收到消息
-        emit(Events.addNewReplyMessage, {
-          timestamp: assistantMessage.timestamp,
-        });
-      }, 300);
+      if (robot.vits?.enabled) {
+        playMessageByTimestamp(assistantMessage.timestamp, value.text);
+      }
       setLoading(false);
       scrollToBottom();
     } catch (err: any) {
@@ -158,8 +155,16 @@ const CommonChat = ({ className, robot }: CommonChatProps) => {
                         timestamp={message.timestamp}
                         sender={message.sender}
                         robotId={robot.id}
-                        robotAvatar={robot.avatar}
                         myAvatar={setting.basic.avatar}
+                        audioStatus={
+                          message.timestamp === currentTimestamp
+                            ? status
+                            : VitsStatusEnum.idle
+                        }
+                        onAudioPlay={() => {
+                          playMessageByTimestamp(message.timestamp);
+                        }}
+                        onAudioPause={stop}
                       />
                     );
                   })}
