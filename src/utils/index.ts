@@ -167,3 +167,21 @@ export function disableMenu() {
   //   { capture: true },
   // );
 }
+
+export function disableReloadPage() {
+  if (window.location.hostname !== 'tauri.localhost') {
+    return;
+  }
+  // 禁止 F5、ctrl + r 刷新 以及 ctrl + shift + r 强制刷新
+  // 刷新会导致poe进程句柄丢失
+  document.addEventListener('keydown', (event) => {
+    if (
+      event.code === 'F5' ||
+      (event.ctrlKey && event.code === 'KeyR') ||
+      (event.ctrlKey && event.shiftKey && event.code === 'KeyR')
+    ) {
+      // 阻止默认行为
+      event.preventDefault();
+    }
+  });
+}

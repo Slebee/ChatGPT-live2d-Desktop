@@ -41,6 +41,7 @@ export default {
   'chat.form.name': 'Name',
   'chat.form.avatar': 'Avatar',
   'chat.form.robotType': 'Robot Type',
+  'chat.form.prompt': 'Prompt',
   'chat.form.voice': 'Voice',
   'chat.form.vits.noise': 'Noise',
   'chat.form.vits.noise.description':
@@ -79,4 +80,10 @@ export default {
 
   /** baidu translate */
   'setting.baiduTranslateSetting': 'Baidu Translate',
+
+  /** poe */
+  'setting.poeSetting': 'Poe Setting',
+  'setting.poe.port': 'Port',
+  'setting.poe.proxy': 'Proxy',
+  'setting.poe.enabled': 'Enabled',
 };

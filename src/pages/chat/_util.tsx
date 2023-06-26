@@ -9,6 +9,13 @@ export const getRobotTag = (robotType: RobotType) => {
       </Tag>
     );
   }
+  if (robotType === RobotType.POE) {
+    return (
+      <Tag color="orange" bordered={false}>
+        Poe
+      </Tag>
+    );
+  }
   return (
     <Tag color="cyan" bordered={false}>
       Claude

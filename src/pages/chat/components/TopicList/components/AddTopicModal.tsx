@@ -34,6 +34,7 @@ type FormValues = {
   baiduTranslateFrom: string;
   baiduTranslateTo: string;
   baiduTranslateEnabled: boolean;
+  prompt: string;
 };
 type AddTopicModalProps = {
   children: React.ReactNode;
@@ -68,8 +69,11 @@ const AddTopicModal = ({
       const data = await res.json();
       setActs(data);
     };
-    getActs();
-  }, []);
+    if (visible) {
+      getActs();
+    }
+  }, [visible]);
+  const isPoeBot = initialValues?.isPoeBot;
   return (
     <>
       <span
@@ -104,11 +108,12 @@ const AddTopicModal = ({
                 (speaker) => speaker.id === values.speakerId,
               );
               const data = {
-                name: values.name,
+                displayName: values.name,
                 description: values.description,
                 introduction: values.description,
                 avatar: values.avatar,
                 type: values.type,
+                promptPlaintext: values.prompt,
                 vits: {
                   speaker,
                   noise: values.vitsNoise,
@@ -126,16 +131,50 @@ const AddTopicModal = ({
               };
               onSubmit?.();
               if (initialValues) {
-                robotsActions.updateRobotById(initialValues.id!, data);
-                chatActionsFactory(initialValues.id!).updateSystemMessage({
-                  content: data.description,
+                robotsActions.updateRobotById(initialValues.botId!, data);
+                chatActionsFactory(initialValues.botId!).updateSystemMessage({
+                  content: data.promptPlaintext,
                 });
               } else {
-                robotsActions.addRobot({
-                  id: new Date().getTime(),
-                  createdDate: new Date().getTime(),
-                  ...data,
-                });
+                if (data.type === RobotType.POE) {
+                } else {
+                  robotsActions.addRobot({
+                    botId: new Date().getTime(),
+                    defaultBotNickName: data.type,
+                    contextClearWindowSecs: 0,
+                    creator: {
+                      fullName: 'admin',
+                      handle: 'admin',
+                      id: `${new Date().getTime()}-admin`,
+                      profilePhotoUrl: '',
+                      __isNode: '',
+                    },
+                    deletionState: 'not_deleted',
+                    hasClearContext: true,
+                    hasSuggestedReplies: false,
+                    hasWelcomeTopics: false,
+
+                    messageLimit: {
+                      dailyBalance: null,
+                      dailyLimit: null,
+                      numMessagesRemaining: null,
+                      resetTime: 1685664000000000,
+                      shouldShowRemainingMessageCount: false,
+                    },
+                    isApiBot: true,
+                    isDown: false,
+                    isLimitedAccess: false,
+                    model: '',
+                    nickname: '',
+                    poweredBy: '',
+                    disclaimerText:
+                      'This bot may make incorrect statements. It does not have knowledge of events after 2021.',
+                    isPrivateBot: true,
+                    isSystemBot: true,
+                    createdDate: new Date().getTime(),
+                    ...data,
+                  });
+                }
               }
               setVisible(false);
             })
@@ -148,7 +187,7 @@ const AddTopicModal = ({
           <Form.Item
             label={<FormattedMessage id="chat.form.name" />}
             name="name"
-            initialValue={initialValues?.name}
+            initialValue={initialValues?.displayName}
             rules={[
               {
                 required: true,
@@ -156,14 +195,14 @@ const AddTopicModal = ({
               },
             ]}
           >
-            <Input autoFocus ref={inputRef} />
+            <Input autoFocus ref={inputRef} disabled={isPoeBot} />
           </Form.Item>
           <Form.Item
             label={<FormattedMessage id="chat.form.avatar" />}
             name="avatar"
             initialValue={initialValues?.avatar ?? '/avatars/mdg.png'}
           >
-            <AvatarSelect />
+            <AvatarSelect disabled={isPoeBot} />
           </Form.Item>
           <Form.Item
             label={<FormattedMessage id="chat.form.robotType" />}
@@ -171,6 +210,7 @@ const AddTopicModal = ({
             initialValue={initialValues?.type || RobotType.GPT}
           >
             <Select
+              disabled={isPoeBot}
               options={[
                 {
                   label: 'GPT',
@@ -357,13 +397,25 @@ const AddTopicModal = ({
                             .includes(input.toLowerCase())
                         }
                         onChange={(v) => {
-                          form.setFieldValue('description', v);
+                          form.setFieldValue('prompt', v);
                         }}
                         options={acts.map((act) => ({
                           label: act.act,
                           value: act.prompt,
                         }))}
                         allowClear
+                      />
+                    </Form.Item>
+                    <Form.Item
+                      label={<FormattedMessage id="chat.form.prompt" />}
+                      name="prompt"
+                      initialValue={initialValues?.promptPlaintext}
+                    >
+                      <Input.TextArea
+                        rows={4}
+                        style={{
+                          resize: 'none',
+                        }}
                       />
                     </Form.Item>
                     <Form.Item

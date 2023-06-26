@@ -1,5 +1,5 @@
 import { getRobotTag } from '@/pages/chat/_util';
-import { Robot, RobotId, useRobot } from '@/pages/chat/stores/robots';
+import { Robot, RobotId } from '@/pages/chat/stores/robots';
 import { Avatar } from 'antd';
 import {
   Menu,
@@ -16,7 +16,7 @@ type ItemProps = {
 };
 const Item = ({ robot, active, onRemove, onClick }: ItemProps) => {
   const { show } = useContextMenu({
-    id: robot.id,
+    id: robot.botId,
   });
 
   return (
@@ -33,26 +33,28 @@ const Item = ({ robot, active, onRemove, onClick }: ItemProps) => {
         className={`flex p-3 cursor-pointer hover:bg-slate-100 w-full ${
           active ? 'bg-slate-100' : ''
         }`}
-        key={robot.id}
+        key={robot.botId}
         onClick={() => {
-          onClick(robot.id);
+          onClick(robot.botId);
         }}
       >
         <Avatar size="large" className="flex-none mr-2" src={robot.avatar} />
         <div className="flex-auto truncate">
-          <div>{robot.name}</div>
-          <div className="text-xs text-slate-500 truncate w-full text-truncate">
+          <div className="truncate w-full text-truncate">
+            {robot.displayName}
+          </div>
+          <div className="text-xs text-slate-500 ">
             {getRobotTag(robot.type)}
           </div>
         </div>
-        <Menu id={robot.id}>
+        <Menu id={robot.botId}>
           <MenuItem
             id="delete"
             onClick={({ id, event, props }) => {
               switch (id) {
                 case 'delete':
                   setTimeout(() => {
-                    onRemove(robot.id);
+                    onRemove(robot.botId);
                   }, 500);
 
                   break;

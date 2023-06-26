@@ -6,6 +6,7 @@ use tauri::{AppHandle, Manager, Runtime};
 
 mod commands;
 mod tray;
+// mod poe_client;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 struct Position {
@@ -25,6 +26,7 @@ fn main() {
         .plugin(tauri_plugin_positioner::init())
         .plugin(tauri_plugin_store::Builder::default().build())
         .plugin(tauri_plugin_window_state::Builder::default().build())
+        .plugin(tauri_plugin_websocket::init())
         .system_tray(tray::menu())
         .on_system_tray_event(|app, event| {
             tauri_plugin_positioner::on_tray_event(app, &event);

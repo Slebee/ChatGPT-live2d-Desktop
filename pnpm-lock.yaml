@@ -26,8 +26,8 @@ specifiers:
   '@pixi/text': 6.5.2
   '@pixi/ticker': 6.5.2
   '@pixi/utils': 6.5.2
-  '@tauri-apps/api': ^1.2.0
-  '@tauri-apps/cli': ^1.2.3
+  '@tauri-apps/api': ^1.3.0
+  '@tauri-apps/cli': ^1.3.1
   '@types/lodash-es': ^4.17.7
   '@types/markdown-it': ^12.2.3
   '@types/react': ^18.0.0
@@ -40,6 +40,7 @@ specifiers:
   axios-tauri-api-adapter: ^0.2.0
   classnames: ^2.3.2
   darkreader: ^4.9.58
+  eventsource-parser: ^1.0.0
   highlight.js: ^11.7.0
   json5: ^2.2.3
   jszip: ^3.10.1
@@ -57,11 +58,13 @@ specifiers:
   react: ^18.2.0
   react-contexify: ^6.0.0
   react-dom: ^18.2.0
+  socket.io-client: 3.0.4
   spark-md5: ^3.0.2
   stats.js: ^0.17.0
   tailwindcss: ^3
   tauri-plugin-positioner-api: 0.2.7
   tauri-plugin-store-api: github:tauri-apps/tauri-plugin-store
+  tauri-plugin-websocket-api: github:tauri-apps/tauri-plugin-websocket
   typescript: ^5.0.0
   umi: ^4.0.64
   valtio: ^1.10.4
@@ -92,7 +95,7 @@ dependencies:
   '@pixi/text': registry.npmjs.org/@pixi/text/6.5.2_kfcliid7sjivk4nrgqvwelsgre
   '@pixi/ticker': registry.npmjs.org/@pixi/ticker/6.5.2_d4bssx2zpvqzbqur2whdnswpxi
   '@pixi/utils': registry.npmjs.org/@pixi/utils/6.5.2_viapqguovzweqghdry67ej3xky
-  '@tauri-apps/api': registry.npmjs.org/@tauri-apps/api/1.2.0
+  '@tauri-apps/api': registry.npmjs.org/@tauri-apps/api/1.3.0
   '@types/lodash-es': registry.npmjs.org/@types/lodash-es/4.17.7
   '@types/markdown-it': registry.npmjs.org/@types/markdown-it/12.2.3
   '@types/spark-md5': registry.npmjs.org/@types/spark-md5/3.0.2
@@ -102,6 +105,7 @@ dependencies:
   axios-tauri-api-adapter: registry.npmjs.org/axios-tauri-api-adapter/0.2.0
   classnames: registry.npmjs.org/classnames/2.3.2
   darkreader: registry.npmjs.org/darkreader/4.9.58
+  eventsource-parser: registry.npmjs.org/eventsource-parser/1.0.0
   highlight.js: registry.npmjs.org/highlight.js/11.7.0
   json5: registry.npmjs.org/json5/2.2.3
   jszip: registry.npmjs.org/jszip/3.10.1
@@ -116,15 +120,17 @@ dependencies:
   react: registry.npmjs.org/react/18.2.0
   react-contexify: registry.npmjs.org/react-contexify/6.0.0_biqbaboplfbrettd7655fr4n2y
   react-dom: registry.npmjs.org/react-dom/18.2.0_react@18.2.0
+  socket.io-client: registry.npmjs.org/socket.io-client/3.0.4
   spark-md5: registry.npmjs.org/spark-md5/3.0.2
   stats.js: registry.npmjs.org/stats.js/0.17.0
   tauri-plugin-positioner-api: registry.npmjs.org/tauri-plugin-positioner-api/0.2.7
   tauri-plugin-store-api: github.com/tauri-apps/tauri-plugin-store/0558a1f6c869ae0afdb0181dfa1ea31be8cf4893
+  tauri-plugin-websocket-api: github.com/tauri-apps/tauri-plugin-websocket/c77fa23243388bdeff6ca1b09f78b71b62ef01da
   umi: registry.npmjs.org/umi/4.0.66_k6fd4a464sj4lmxcminr3dcayi
   valtio: registry.npmjs.org/valtio/1.10.4_react@18.2.0
 
 devDependencies:
-  '@tauri-apps/cli': registry.npmjs.org/@tauri-apps/cli/1.2.3
+  '@tauri-apps/cli': registry.npmjs.org/@tauri-apps/cli/1.3.1
   '@types/react': registry.npmjs.org/@types/react/18.0.38
   '@types/react-dom': registry.npmjs.org/@types/react-dom/18.0.11
   '@umijs/plugins': registry.npmjs.org/@umijs/plugins/4.0.66_waanrdgkijshyi6sfenvory5ri
@@ -141,7 +147,15 @@ packages:
     name: tauri-plugin-store-api
     version: 0.0.0
     dependencies:
-      '@tauri-apps/api': registry.npmjs.org/@tauri-apps/api/1.2.0
+      '@tauri-apps/api': registry.npmjs.org/@tauri-apps/api/1.3.0
+    dev: false
+
+  github.com/tauri-apps/tauri-plugin-websocket/c77fa23243388bdeff6ca1b09f78b71b62ef01da:
+    resolution: {tarball: https://codeload.github.com/tauri-apps/tauri-plugin-websocket/tar.gz/c77fa23243388bdeff6ca1b09f78b71b62ef01da}
+    name: tauri-plugin-websocket-api
+    version: 0.0.0
+    dependencies:
+      '@tauri-apps/api': registry.npmjs.org/@tauri-apps/api/1.3.0
     dev: false
 
   registry.npmjs.org/@ahooksjs/use-request/2.8.15_react@18.2.0:
@@ -4513,17 +4527,17 @@ packages:
       use-sync-external-store: registry.npmjs.org/use-sync-external-store/1.2.0_react@18.2.0
     dev: true
 
-  registry.npmjs.org/@tauri-apps/api/1.2.0:
-    resolution: {integrity: sha512-lsI54KI6HGf7VImuf/T9pnoejfgkNoXveP14pVV7XarrQ46rOejIVJLFqHI9sRReJMGdh2YuCoI3cc/yCWCsrw==, registry: https://registry.npmjs.com/, tarball: https://registry.npmjs.org/@tauri-apps/api/-/api-1.2.0.tgz}
+  registry.npmjs.org/@tauri-apps/api/1.3.0:
+    resolution: {integrity: sha512-AH+3FonkKZNtfRtGrObY38PrzEj4d+1emCbwNGu0V2ENbXjlLHMZQlUh+Bhu/CRmjaIwZMGJ3yFvWaZZgTHoog==, registry: https://registry.npmjs.com/, tarball: https://registry.npmjs.org/@tauri-apps/api/-/api-1.3.0.tgz}
     name: '@tauri-apps/api'
-    version: 1.2.0
+    version: 1.3.0
     engines: {node: '>= 14.6.0', npm: '>= 6.6.0', yarn: '>= 1.19.1'}
     dev: false
 
-  registry.npmjs.org/@tauri-apps/cli-darwin-arm64/1.2.3:
-    resolution: {integrity: sha512-phJN3fN8FtZZwqXg08bcxfq1+X1JSDglLvRxOxB7VWPq+O5SuB8uLyssjJsu+PIhyZZnIhTGdjhzLSFhSXfLsw==, registry: https://registry.npmjs.com/, tarball: https://registry.npmjs.org/@tauri-apps/cli-darwin-arm64/-/cli-darwin-arm64-1.2.3.tgz}
+  registry.npmjs.org/@tauri-apps/cli-darwin-arm64/1.3.1:
+    resolution: {integrity: sha512-QlepYVPgOgspcwA/u4kGG4ZUijlXfdRtno00zEy+LxinN/IRXtk+6ErVtsmoLi1ZC9WbuMwzAcsRvqsD+RtNAg==, registry: https://registry.npmjs.com/, tarball: https://registry.npmjs.org/@tauri-apps/cli-darwin-arm64/-/cli-darwin-arm64-1.3.1.tgz}
     name: '@tauri-apps/cli-darwin-arm64'
-    version: 1.2.3
+    version: 1.3.1
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [darwin]
@@ -4531,10 +4545,10 @@ packages:
     dev: true
     optional: true
 
-  registry.npmjs.org/@tauri-apps/cli-darwin-x64/1.2.3:
-    resolution: {integrity: sha512-jFZ/y6z8z6v4yliIbXKBXA7BJgtZVMsITmEXSuD6s5+eCOpDhQxbRkr6CA+FFfr+/r96rWSDSgDenDQuSvPAKw==, registry: https://registry.npmjs.com/, tarball: https://registry.npmjs.org/@tauri-apps/cli-darwin-x64/-/cli-darwin-x64-1.2.3.tgz}
+  registry.npmjs.org/@tauri-apps/cli-darwin-x64/1.3.1:
+    resolution: {integrity: sha512-fKcAUPVFO3jfDKXCSDGY0MhZFF/wDtx3rgFnogWYu4knk38o9RaqRkvMvqJhLYPuWaEM5h6/z1dRrr9KKCbrVg==, registry: https://registry.npmjs.com/, tarball: https://registry.npmjs.org/@tauri-apps/cli-darwin-x64/-/cli-darwin-x64-1.3.1.tgz}
     name: '@tauri-apps/cli-darwin-x64'
-    version: 1.2.3
+    version: 1.3.1
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [darwin]
@@ -4542,10 +4556,10 @@ packages:
     dev: true
     optional: true
 
-  registry.npmjs.org/@tauri-apps/cli-linux-arm-gnueabihf/1.2.3:
-    resolution: {integrity: sha512-C7h5vqAwXzY0kRGSU00Fj8PudiDWFCiQqqUNI1N+fhCILrzWZB9TPBwdx33ZfXKt/U4+emdIoo/N34v3TiAOmQ==, registry: https://registry.npmjs.com/, tarball: https://registry.npmjs.org/@tauri-apps/cli-linux-arm-gnueabihf/-/cli-linux-arm-gnueabihf-1.2.3.tgz}
+  registry.npmjs.org/@tauri-apps/cli-linux-arm-gnueabihf/1.3.1:
+    resolution: {integrity: sha512-+4H0dv8ltJHYu/Ma1h9ixUPUWka9EjaYa8nJfiMsdCI4LJLNE6cPveE7RmhZ59v9GW1XB108/k083JUC/OtGvA==, registry: https://registry.npmjs.com/, tarball: https://registry.npmjs.org/@tauri-apps/cli-linux-arm-gnueabihf/-/cli-linux-arm-gnueabihf-1.3.1.tgz}
     name: '@tauri-apps/cli-linux-arm-gnueabihf'
-    version: 1.2.3
+    version: 1.3.1
     engines: {node: '>= 10'}
     cpu: [arm]
     os: [linux]
@@ -4553,10 +4567,10 @@ packages:
     dev: true
     optional: true
 
-  registry.npmjs.org/@tauri-apps/cli-linux-arm64-gnu/1.2.3:
-    resolution: {integrity: sha512-buf1c8sdkuUzVDkGPQpyUdAIIdn5r0UgXU6+H5fGPq/Xzt5K69JzXaeo6fHsZEZghbV0hOK+taKV4J0m30UUMQ==, registry: https://registry.npmjs.com/, tarball: https://registry.npmjs.org/@tauri-apps/cli-linux-arm64-gnu/-/cli-linux-arm64-gnu-1.2.3.tgz}
+  registry.npmjs.org/@tauri-apps/cli-linux-arm64-gnu/1.3.1:
+    resolution: {integrity: sha512-Pj3odVO1JAxLjYmoXKxcrpj/tPxcA8UP8N06finhNtBtBaxAjrjjxKjO4968KB0BUH7AASIss9EL4Tr0FGnDuw==, registry: https://registry.npmjs.com/, tarball: https://registry.npmjs.org/@tauri-apps/cli-linux-arm64-gnu/-/cli-linux-arm64-gnu-1.3.1.tgz}
     name: '@tauri-apps/cli-linux-arm64-gnu'
-    version: 1.2.3
+    version: 1.3.1
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [linux]
@@ -4564,10 +4578,10 @@ packages:
     dev: true
     optional: true
 
-  registry.npmjs.org/@tauri-apps/cli-linux-arm64-musl/1.2.3:
-    resolution: {integrity: sha512-x88wPS9W5xAyk392vc4uNHcKBBvCp0wf4H9JFMF9OBwB7vfd59LbQCFcPSu8f0BI7bPrOsyHqspWHuFL8ojQEA==, registry: https://registry.npmjs.com/, tarball: https://registry.npmjs.org/@tauri-apps/cli-linux-arm64-musl/-/cli-linux-arm64-musl-1.2.3.tgz}
+  registry.npmjs.org/@tauri-apps/cli-linux-arm64-musl/1.3.1:
+    resolution: {integrity: sha512-tA0JdDLPFaj42UDIVcF2t8V0tSha40rppcmAR/MfQpTCxih6399iMjwihz9kZE1n4b5O4KTq9GliYo50a8zYlQ==, registry: https://registry.npmjs.com/, tarball: https://registry.npmjs.org/@tauri-apps/cli-linux-arm64-musl/-/cli-linux-arm64-musl-1.3.1.tgz}
     name: '@tauri-apps/cli-linux-arm64-musl'
-    version: 1.2.3
+    version: 1.3.1
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [linux]
@@ -4575,10 +4589,10 @@ packages:
     dev: true
     optional: true
 
-  registry.npmjs.org/@tauri-apps/cli-linux-x64-gnu/1.2.3:
-    resolution: {integrity: sha512-ZMz1jxEVe0B4/7NJnlPHmwmSIuwiD6ViXKs8F+OWWz2Y4jn5TGxWKFg7DLx5OwQTRvEIZxxT7lXHi5CuTNAxKg==, registry: https://registry.npmjs.com/, tarball: https://registry.npmjs.org/@tauri-apps/cli-linux-x64-gnu/-/cli-linux-x64-gnu-1.2.3.tgz}
+  registry.npmjs.org/@tauri-apps/cli-linux-x64-gnu/1.3.1:
+    resolution: {integrity: sha512-FDU+Mnvk6NLkqQimcNojdKpMN4Y3W51+SQl+NqG9AFCWprCcSg62yRb84751ujZuf2MGT8HQOfmd0i77F4Q3tQ==, registry: https://registry.npmjs.com/, tarball: https://registry.npmjs.org/@tauri-apps/cli-linux-x64-gnu/-/cli-linux-x64-gnu-1.3.1.tgz}
     name: '@tauri-apps/cli-linux-x64-gnu'
-    version: 1.2.3
+    version: 1.3.1
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [linux]
@@ -4586,10 +4600,10 @@ packages:
     dev: true
     optional: true
 
-  registry.npmjs.org/@tauri-apps/cli-linux-x64-musl/1.2.3:
-    resolution: {integrity: sha512-B/az59EjJhdbZDzawEVox0LQu2ZHCZlk8rJf85AMIktIUoAZPFbwyiUv7/zjzA/sY6Nb58OSJgaPL2/IBy7E0A==, registry: https://registry.npmjs.com/, tarball: https://registry.npmjs.org/@tauri-apps/cli-linux-x64-musl/-/cli-linux-x64-musl-1.2.3.tgz}
+  registry.npmjs.org/@tauri-apps/cli-linux-x64-musl/1.3.1:
+    resolution: {integrity: sha512-MpO3akXFmK8lZYEbyQRDfhdxz1JkTBhonVuz5rRqxwA7gnGWHa1aF1+/2zsy7ahjB2tQ9x8DDFDMdVE20o9HrA==, registry: https://registry.npmjs.com/, tarball: https://registry.npmjs.org/@tauri-apps/cli-linux-x64-musl/-/cli-linux-x64-musl-1.3.1.tgz}
     name: '@tauri-apps/cli-linux-x64-musl'
-    version: 1.2.3
+    version: 1.3.1
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [linux]
@@ -4597,10 +4611,10 @@ packages:
     dev: true
     optional: true
 
-  registry.npmjs.org/@tauri-apps/cli-win32-ia32-msvc/1.2.3:
-    resolution: {integrity: sha512-ypdO1OdC5ugNJAKO2m3sb1nsd+0TSvMS9Tr5qN/ZSMvtSduaNwrcZ3D7G/iOIanrqu/Nl8t3LYlgPZGBKlw7Ng==, registry: https://registry.npmjs.com/, tarball: https://registry.npmjs.org/@tauri-apps/cli-win32-ia32-msvc/-/cli-win32-ia32-msvc-1.2.3.tgz}
+  registry.npmjs.org/@tauri-apps/cli-win32-ia32-msvc/1.3.1:
+    resolution: {integrity: sha512-9Boeo3K5sOrSBAZBuYyGkpV2RfnGQz3ZhGJt4hE6P+HxRd62lS6+qDKAiw1GmkZ0l1drc2INWrNeT50gwOKwIQ==, registry: https://registry.npmjs.com/, tarball: https://registry.npmjs.org/@tauri-apps/cli-win32-ia32-msvc/-/cli-win32-ia32-msvc-1.3.1.tgz}
     name: '@tauri-apps/cli-win32-ia32-msvc'
-    version: 1.2.3
+    version: 1.3.1
     engines: {node: '>= 10'}
     cpu: [ia32]
     os: [win32]
@@ -4608,10 +4622,10 @@ packages:
     dev: true
     optional: true
 
-  registry.npmjs.org/@tauri-apps/cli-win32-x64-msvc/1.2.3:
-    resolution: {integrity: sha512-CsbHQ+XhnV/2csOBBDVfH16cdK00gNyNYUW68isedmqcn8j+s0e9cQ1xXIqi+Hue3awp8g3ImYN5KPepf3UExw==, registry: https://registry.npmjs.com/, tarball: https://registry.npmjs.org/@tauri-apps/cli-win32-x64-msvc/-/cli-win32-x64-msvc-1.2.3.tgz}
+  registry.npmjs.org/@tauri-apps/cli-win32-x64-msvc/1.3.1:
+    resolution: {integrity: sha512-wMrTo91hUu5CdpbElrOmcZEoJR4aooTG+fbtcc87SMyPGQy1Ux62b+ZdwLvL1sVTxnIm//7v6QLRIWGiUjCPwA==, registry: https://registry.npmjs.com/, tarball: https://registry.npmjs.org/@tauri-apps/cli-win32-x64-msvc/-/cli-win32-x64-msvc-1.3.1.tgz}
     name: '@tauri-apps/cli-win32-x64-msvc'
-    version: 1.2.3
+    version: 1.3.1
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [win32]
@@ -4619,22 +4633,22 @@ packages:
     dev: true
     optional: true
 
-  registry.npmjs.org/@tauri-apps/cli/1.2.3:
-    resolution: {integrity: sha512-erxtXuPhMEGJPBtnhPILD4AjuT81GZsraqpFvXAmEJZ2p8P6t7MVBifCL8LznRknznM3jn90D3M8RNBP3wcXTw==, registry: https://registry.npmjs.com/, tarball: https://registry.npmjs.org/@tauri-apps/cli/-/cli-1.2.3.tgz}
+  registry.npmjs.org/@tauri-apps/cli/1.3.1:
+    resolution: {integrity: sha512-o4I0JujdITsVRm3/0spfJX7FcKYrYV1DXJqzlWIn6IY25/RltjU6qbC1TPgVww3RsRX63jyVUTcWpj5wwFl+EQ==, registry: https://registry.npmjs.com/, tarball: https://registry.npmjs.org/@tauri-apps/cli/-/cli-1.3.1.tgz}
     name: '@tauri-apps/cli'
-    version: 1.2.3
+    version: 1.3.1
     engines: {node: '>= 10'}
     hasBin: true
     optionalDependencies:
-      '@tauri-apps/cli-darwin-arm64': registry.npmjs.org/@tauri-apps/cli-darwin-arm64/1.2.3
-      '@tauri-apps/cli-darwin-x64': registry.npmjs.org/@tauri-apps/cli-darwin-x64/1.2.3
-      '@tauri-apps/cli-linux-arm-gnueabihf': registry.npmjs.org/@tauri-apps/cli-linux-arm-gnueabihf/1.2.3
-      '@tauri-apps/cli-linux-arm64-gnu': registry.npmjs.org/@tauri-apps/cli-linux-arm64-gnu/1.2.3
-      '@tauri-apps/cli-linux-arm64-musl': registry.npmjs.org/@tauri-apps/cli-linux-arm64-musl/1.2.3
-      '@tauri-apps/cli-linux-x64-gnu': registry.npmjs.org/@tauri-apps/cli-linux-x64-gnu/1.2.3
-      '@tauri-apps/cli-linux-x64-musl': registry.npmjs.org/@tauri-apps/cli-linux-x64-musl/1.2.3
-      '@tauri-apps/cli-win32-ia32-msvc': registry.npmjs.org/@tauri-apps/cli-win32-ia32-msvc/1.2.3
-      '@tauri-apps/cli-win32-x64-msvc': registry.npmjs.org/@tauri-apps/cli-win32-x64-msvc/1.2.3
+      '@tauri-apps/cli-darwin-arm64': registry.npmjs.org/@tauri-apps/cli-darwin-arm64/1.3.1
+      '@tauri-apps/cli-darwin-x64': registry.npmjs.org/@tauri-apps/cli-darwin-x64/1.3.1
+      '@tauri-apps/cli-linux-arm-gnueabihf': registry.npmjs.org/@tauri-apps/cli-linux-arm-gnueabihf/1.3.1
+      '@tauri-apps/cli-linux-arm64-gnu': registry.npmjs.org/@tauri-apps/cli-linux-arm64-gnu/1.3.1
+      '@tauri-apps/cli-linux-arm64-musl': registry.npmjs.org/@tauri-apps/cli-linux-arm64-musl/1.3.1
+      '@tauri-apps/cli-linux-x64-gnu': registry.npmjs.org/@tauri-apps/cli-linux-x64-gnu/1.3.1
+      '@tauri-apps/cli-linux-x64-musl': registry.npmjs.org/@tauri-apps/cli-linux-x64-musl/1.3.1
+      '@tauri-apps/cli-win32-ia32-msvc': registry.npmjs.org/@tauri-apps/cli-win32-ia32-msvc/1.3.1
+      '@tauri-apps/cli-win32-x64-msvc': registry.npmjs.org/@tauri-apps/cli-win32-x64-msvc/1.3.1
     dev: true
 
   registry.npmjs.org/@trysound/sax/0.2.0:
@@ -4679,6 +4693,12 @@ packages:
     version: 7.18.3
     dependencies:
       '@babel/types': registry.npmjs.org/@babel/types/7.21.4
+    dev: false
+
+  registry.npmjs.org/@types/component-emitter/1.2.11:
+    resolution: {integrity: sha512-SRXjM+tfsSlA9VuG8hGO2nft2p8zjXCK1VcC6N4NXbBbYbSia9kzCChYQajIjzIqOOOuh5Ock6MmV2oux4jDZQ==, registry: https://registry.npmjs.com/, tarball: https://registry.npmjs.org/@types/component-emitter/-/component-emitter-1.2.11.tgz}
+    name: '@types/component-emitter'
+    version: 1.2.11
     dev: false
 
   registry.npmjs.org/@types/earcut/2.1.1:
@@ -6031,7 +6051,7 @@ packages:
     engines: {node: '>=16', pnpm: '>=7'}
     requiresBuild: true
     dependencies:
-      '@tauri-apps/api': registry.npmjs.org/@tauri-apps/api/1.2.0
+      '@tauri-apps/api': registry.npmjs.org/@tauri-apps/api/1.3.0
       axios: registry.npmjs.org/axios/1.3.6
       build-url-ts: registry.npmjs.org/build-url-ts/6.1.5
       http-status-codes: registry.npmjs.org/http-status-codes/2.2.0
@@ -6233,10 +6253,23 @@ packages:
       babel-preset-current-node-syntax: registry.npmjs.org/babel-preset-current-node-syntax/1.0.1
     dev: false
 
+  registry.npmjs.org/backo2/1.0.2:
+    resolution: {integrity: sha512-zj6Z6M7Eq+PBZ7PQxl5NT665MvJdAkzp0f60nAJ+sLaSCBPMwVak5ZegFbgVCzFcCJTKFoMizvM5Ld7+JrRJHA==, registry: https://registry.npmjs.com/, tarball: https://registry.npmjs.org/backo2/-/backo2-1.0.2.tgz}
+    name: backo2
+    version: 1.0.2
+    dev: false
+
   registry.npmjs.org/balanced-match/1.0.2:
     resolution: {integrity: sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw==, registry: https://registry.npmjs.com/, tarball: https://registry.npmjs.org/balanced-match/-/balanced-match-1.0.2.tgz}
     name: balanced-match
     version: 1.0.2
+
+  registry.npmjs.org/base64-arraybuffer/0.1.4:
+    resolution: {integrity: sha512-a1eIFi4R9ySrbiMuyTGx5e92uRH5tQY6kArNcFaKBUleIoLjdjBg7Zxm3Mqm3Kmkf27HLR/1fnxX9q8GQ7Iavg==, registry: https://registry.npmjs.com/, tarball: https://registry.npmjs.org/base64-arraybuffer/-/base64-arraybuffer-0.1.4.tgz}
+    name: base64-arraybuffer
+    version: 0.1.4
+    engines: {node: '>= 0.6.0'}
+    dev: false
 
   registry.npmjs.org/base64-js/1.5.1:
     resolution: {integrity: sha512-AKpaYlHn8t4SVbOHCy+b5+KKgvR4vrsD8vbvrbiQJps7fKDTkjkDry6ji0rUJjC0kzbNePLwzxq8iypo41qeWA==, registry: https://registry.npmjs.com/, tarball: https://registry.npmjs.org/base64-js/-/base64-js-1.5.1.tgz}
@@ -6648,6 +6681,18 @@ packages:
     version: 1.0.1
     dev: false
 
+  registry.npmjs.org/component-bind/1.0.0:
+    resolution: {integrity: sha512-WZveuKPeKAG9qY+FkYDeADzdHyTYdIboXS59ixDeRJL5ZhxpqUnxSOwop4FQjMsiYm3/Or8cegVbpAHNA7pHxw==, registry: https://registry.npmjs.com/, tarball: https://registry.npmjs.org/component-bind/-/component-bind-1.0.0.tgz}
+    name: component-bind
+    version: 1.0.0
+    dev: false
+
+  registry.npmjs.org/component-emitter/1.3.0:
+    resolution: {integrity: sha512-Rd3se6QB+sO1TwqZjscQrurpEPIfO0/yYnSin6Q/rD3mOutHvUrCAhJub3r90uNb+SESBuE0QYoB90YdfatsRg==, registry: https://registry.npmjs.com/, tarball: https://registry.npmjs.org/component-emitter/-/component-emitter-1.3.0.tgz}
+    name: component-emitter
+    version: 1.3.0
+    dev: false
+
   registry.npmjs.org/compute-scroll-into-view/3.0.3:
     resolution: {integrity: sha512-nadqwNxghAGTamwIqQSG433W6OADZx2vCo3UXHNrzTRHK/htu+7+L0zhjEoaeaQVNAi3YgqWDv8+tzf0hRfR+A==, registry: https://registry.npmjs.com/, tarball: https://registry.npmjs.org/compute-scroll-into-view/-/compute-scroll-into-view-3.0.3.tgz}
     name: compute-scroll-into-view
@@ -7030,6 +7075,20 @@ packages:
     dev: false
     optional: true
 
+  registry.npmjs.org/debug/4.1.1:
+    resolution: {integrity: sha512-pYAIzeRo8J6KPEaJ0VWOh5Pzkbw/RetuzehGM7QRRX5he4fPHx2rdKMB256ehJCkX+XRQm16eZLqLNS8RSZXZw==, registry: https://registry.npmjs.com/, tarball: https://registry.npmjs.org/debug/-/debug-4.1.1.tgz}
+    name: debug
+    version: 4.1.1
+    deprecated: Debug versions >=3.2.0 <3.2.7 || >=4 <4.3.1 have a low-severity ReDos regression when used in a Node.js environment. It is recommended you upgrade to 3.2.7 or 4.3.1. (https://github.com/visionmedia/debug/issues/797)
+    peerDependencies:
+      supports-color: '*'
+    peerDependenciesMeta:
+      supports-color:
+        optional: true
+    dependencies:
+      ms: registry.npmjs.org/ms/2.1.3
+    dev: false
+
   registry.npmjs.org/debug/4.3.4:
     resolution: {integrity: sha512-PRWFHuSU3eDtQJPvnNY7Jcket1j0t5OuOsFzPPzsekD52Zl8qUfFIPEiswXqIvHWGVHOgX+7G/vCNNhehwxfkQ==, registry: https://registry.npmjs.com/, tarball: https://registry.npmjs.org/debug/-/debug-4.3.4.tgz}
     name: debug
@@ -7323,6 +7382,36 @@ packages:
     version: 1.4.4
     dependencies:
       once: registry.npmjs.org/once/1.4.0
+
+  registry.npmjs.org/engine.io-client/4.0.6:
+    resolution: {integrity: sha512-5lPh8rrhxIruo5ZlgFt31KM626o5OCXrCHBweieWWuVicDtnYdz/iR93k6N9k0Xs61WrYxZKIWXzeSaJF6fpNA==, registry: https://registry.npmjs.com/, tarball: https://registry.npmjs.org/engine.io-client/-/engine.io-client-4.0.6.tgz}
+    name: engine.io-client
+    version: 4.0.6
+    dependencies:
+      base64-arraybuffer: registry.npmjs.org/base64-arraybuffer/0.1.4
+      component-emitter: registry.npmjs.org/component-emitter/1.3.0
+      debug: registry.npmjs.org/debug/4.3.4
+      engine.io-parser: registry.npmjs.org/engine.io-parser/4.0.3
+      has-cors: registry.npmjs.org/has-cors/1.1.0
+      parseqs: registry.npmjs.org/parseqs/0.0.6
+      parseuri: registry.npmjs.org/parseuri/0.0.6
+      ws: registry.npmjs.org/ws/7.4.6
+      xmlhttprequest-ssl: registry.npmjs.org/xmlhttprequest-ssl/1.5.5
+      yeast: registry.npmjs.org/yeast/0.1.2
+    transitivePeerDependencies:
+      - bufferutil
+      - supports-color
+      - utf-8-validate
+    dev: false
+
+  registry.npmjs.org/engine.io-parser/4.0.3:
+    resolution: {integrity: sha512-xEAAY0msNnESNPc00e19y5heTPX4y/TJ36gr8t1voOaNmTojP9b3oK3BbJLFufW2XFPQaaijpFewm2g2Um3uqA==, registry: https://registry.npmjs.com/, tarball: https://registry.npmjs.org/engine.io-parser/-/engine.io-parser-4.0.3.tgz}
+    name: engine.io-parser
+    version: 4.0.3
+    engines: {node: '>=8.0.0'}
+    dependencies:
+      base64-arraybuffer: registry.npmjs.org/base64-arraybuffer/0.1.4
+    dev: false
 
   registry.npmjs.org/enhanced-resolve/5.9.3:
     resolution: {integrity: sha512-Bq9VSor+kjvW3f9/MiiR4eE3XYgOl7/rS8lnSxbRbF3kS0B2r+Y9w5krBWxZgDxASVZbdYrn5wT4j/Wb0J9qow==, registry: https://registry.npmjs.com/, tarball: https://registry.npmjs.org/enhanced-resolve/-/enhanced-resolve-5.9.3.tgz}
@@ -7736,6 +7825,13 @@ packages:
     name: events
     version: 3.3.0
     engines: {node: '>=0.8.x'}
+    dev: false
+
+  registry.npmjs.org/eventsource-parser/1.0.0:
+    resolution: {integrity: sha512-9jgfSCa3dmEme2ES3mPByGXfgZ87VbP97tng1G2nWwWx6bV2nYxm2AWCrbQjXToSe+yYlqaZNtxffR9IeQr95g==, registry: https://registry.npmjs.com/, tarball: https://registry.npmjs.org/eventsource-parser/-/eventsource-parser-1.0.0.tgz}
+    name: eventsource-parser
+    version: 1.0.0
+    engines: {node: '>=14.18'}
     dev: false
 
   registry.npmjs.org/evp_bytestokey/1.0.3:
@@ -8259,6 +8355,12 @@ packages:
     resolution: {integrity: sha512-tSvCKtBr9lkF0Ex0aQiP9N+OpV4zi2r/Nee5VkRDbaqv35RLYMzbwQfFSZZH0kR+Rd6302UJZ2p/bJCEoR3VoQ==, registry: https://registry.npmjs.com/, tarball: https://registry.npmjs.org/has-bigints/-/has-bigints-1.0.2.tgz}
     name: has-bigints
     version: 1.0.2
+    dev: false
+
+  registry.npmjs.org/has-cors/1.1.0:
+    resolution: {integrity: sha512-g5VNKdkFuUuVCP9gYfDJHjK2nqdQJ7aDLTnycnc2+RvsOQbuLdF5pm7vuE5J76SEBIQjs4kQY/BWq74JUmjbXA==, registry: https://registry.npmjs.com/, tarball: https://registry.npmjs.org/has-cors/-/has-cors-1.1.0.tgz}
+    name: has-cors
+    version: 1.1.0
     dev: false
 
   registry.npmjs.org/has-flag/3.0.0:
@@ -9656,7 +9758,6 @@ packages:
     name: ms
     version: 2.1.3
     dev: false
-    optional: true
 
   registry.npmjs.org/mz/2.7.0:
     resolution: {integrity: sha512-z81GNO7nnYMEhrGh9LeymoE4+Yr0Wn5McHIZMK5cfQCl+NDX08sCZgUc9/6MHni9IWuFLm1Z3HTCXu2z9fN62Q==, registry: https://registry.npmjs.com/, tarball: https://registry.npmjs.org/mz/-/mz-2.7.0.tgz}
@@ -10054,6 +10155,18 @@ packages:
     name: parse-node-version
     version: 1.0.1
     engines: {node: '>= 0.10'}
+    dev: false
+
+  registry.npmjs.org/parseqs/0.0.6:
+    resolution: {integrity: sha512-jeAGzMDbfSHHA091hr0r31eYfTig+29g3GKKE/PPbEQ65X0lmMwlEoqmhzu0iztID5uJpZsFlUPDP8ThPL7M8w==, registry: https://registry.npmjs.com/, tarball: https://registry.npmjs.org/parseqs/-/parseqs-0.0.6.tgz}
+    name: parseqs
+    version: 0.0.6
+    dev: false
+
+  registry.npmjs.org/parseuri/0.0.6:
+    resolution: {integrity: sha512-AUjen8sAkGgao7UyCX6Ahv0gIK2fABKmYjvP4xmy5JaKvcbTRueIqIPHLAfq30xJddqSE033IOMUSOMCcK3Sow==, registry: https://registry.npmjs.com/, tarball: https://registry.npmjs.org/parseuri/-/parseuri-0.0.6.tgz}
+    name: parseuri
+    version: 0.0.6
     dev: false
 
   registry.npmjs.org/pascal-case/3.1.2:
@@ -12812,6 +12925,39 @@ packages:
     version: 4.0.0
     engines: {node: '>=12'}
 
+  registry.npmjs.org/socket.io-client/3.0.4:
+    resolution: {integrity: sha512-qMvBuS+W9JIN2mkfAWDCxuIt+jpIKDf8C0604zEqx1JrPaPSS6cN0F3B2GYWC83TqBeVJXW66GFxWV3KD88n0Q==, registry: https://registry.npmjs.com/, tarball: https://registry.npmjs.org/socket.io-client/-/socket.io-client-3.0.4.tgz}
+    name: socket.io-client
+    version: 3.0.4
+    engines: {node: '>=10.0.0'}
+    dependencies:
+      '@types/component-emitter': registry.npmjs.org/@types/component-emitter/1.2.11
+      backo2: registry.npmjs.org/backo2/1.0.2
+      component-bind: registry.npmjs.org/component-bind/1.0.0
+      component-emitter: registry.npmjs.org/component-emitter/1.3.0
+      debug: registry.npmjs.org/debug/4.1.1
+      engine.io-client: registry.npmjs.org/engine.io-client/4.0.6
+      parseuri: registry.npmjs.org/parseuri/0.0.6
+      socket.io-parser: registry.npmjs.org/socket.io-parser/4.0.5
+    transitivePeerDependencies:
+      - bufferutil
+      - supports-color
+      - utf-8-validate
+    dev: false
+
+  registry.npmjs.org/socket.io-parser/4.0.5:
+    resolution: {integrity: sha512-sNjbT9dX63nqUFIOv95tTVm6elyIU4RvB1m8dOeZt+IgWwcWklFDOdmGcfo3zSiRsnR/3pJkjY5lfoGqEe4Eig==, registry: https://registry.npmjs.com/, tarball: https://registry.npmjs.org/socket.io-parser/-/socket.io-parser-4.0.5.tgz}
+    name: socket.io-parser
+    version: 4.0.5
+    engines: {node: '>=10.0.0'}
+    dependencies:
+      '@types/component-emitter': registry.npmjs.org/@types/component-emitter/1.2.11
+      component-emitter: registry.npmjs.org/component-emitter/1.3.0
+      debug: registry.npmjs.org/debug/4.3.4
+    transitivePeerDependencies:
+      - supports-color
+    dev: false
+
   registry.npmjs.org/sonic-boom/2.8.0:
     resolution: {integrity: sha512-kuonw1YOYYNOve5iHdSahXPOK49GqwA+LZhI6Wz/l0rP57iKyXXIHaRagOBHAPmGwJC6od2Z9zgvZ5loSgMlVg==, registry: https://registry.npmjs.com/, tarball: https://registry.npmjs.org/sonic-boom/-/sonic-boom-2.8.0.tgz}
     name: sonic-boom
@@ -13292,7 +13438,7 @@ packages:
     name: tauri-plugin-positioner-api
     version: 0.2.7
     dependencies:
-      '@tauri-apps/api': registry.npmjs.org/@tauri-apps/api/1.2.0
+      '@tauri-apps/api': registry.npmjs.org/@tauri-apps/api/1.3.0
     dev: false
 
   registry.npmjs.org/terser/5.17.1:
@@ -13956,6 +14102,28 @@ packages:
       signal-exit: registry.npmjs.org/signal-exit/3.0.7
     dev: false
 
+  registry.npmjs.org/ws/7.4.6:
+    resolution: {integrity: sha512-YmhHDO4MzaDLB+M9ym/mDA5z0naX8j7SIlT8f8z+I0VtzsRbekxEutHSme7NPS2qE8StCYQNUnfWdXta/Yu85A==, registry: https://registry.npmjs.com/, tarball: https://registry.npmjs.org/ws/-/ws-7.4.6.tgz}
+    name: ws
+    version: 7.4.6
+    engines: {node: '>=8.3.0'}
+    peerDependencies:
+      bufferutil: ^4.0.1
+      utf-8-validate: ^5.0.2
+    peerDependenciesMeta:
+      bufferutil:
+        optional: true
+      utf-8-validate:
+        optional: true
+    dev: false
+
+  registry.npmjs.org/xmlhttprequest-ssl/1.5.5:
+    resolution: {integrity: sha512-/bFPLUgJrfGUL10AIv4Y7/CUt6so9CLtB/oFxQSHseSDNNCdC6vwwKEqwLN6wNPBg9YWXAiMu8jkf6RPRS/75Q==, registry: https://registry.npmjs.com/, tarball: https://registry.npmjs.org/xmlhttprequest-ssl/-/xmlhttprequest-ssl-1.5.5.tgz}
+    name: xmlhttprequest-ssl
+    version: 1.5.5
+    engines: {node: '>=0.4.0'}
+    dev: false
+
   registry.npmjs.org/xtend/4.0.2:
     resolution: {integrity: sha512-LKYU1iAXJXUgAXn9URjiu+MWhyUXHsvfp7mcuYm9dSUKK0/CjtrUwFAxD82/mCWbtLsGjFIad0wIsod4zrTAEQ==, registry: https://registry.npmjs.com/, tarball: https://registry.npmjs.org/xtend/-/xtend-4.0.2.tgz}
     name: xtend
@@ -14007,6 +14175,12 @@ packages:
       string-width: registry.npmjs.org/string-width/4.2.3
       y18n: registry.npmjs.org/y18n/5.0.8
       yargs-parser: registry.npmjs.org/yargs-parser/21.1.1
+    dev: false
+
+  registry.npmjs.org/yeast/0.1.2:
+    resolution: {integrity: sha512-8HFIh676uyGYP6wP13R/j6OJ/1HwJ46snpvzE7aHAN3Ryqh2yX6Xox2B4CUmTwwOIzlG3Bs7ocsP5dZH/R1Qbg==, registry: https://registry.npmjs.com/, tarball: https://registry.npmjs.org/yeast/-/yeast-0.1.2.tgz}
+    name: yeast
+    version: 0.1.2
     dev: false
 
   registry.npmjs.org/yocto-queue/0.1.0:

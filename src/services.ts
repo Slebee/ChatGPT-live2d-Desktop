@@ -1,5 +1,6 @@
-import { GptMessageItem, generate as askGpt } from './gpt';
+import { generate as askGpt } from './gpt';
 import { generate as askClaude } from './claude';
+import { generate as askPoe } from './poe';
 import { appSettingState } from './stores/setting';
 import { Speaker } from './types';
 import { request } from './utils/request';
@@ -14,6 +15,7 @@ export const fetchSpeakers = () =>
 const platforms = {
   gpt: askGpt,
   claude: askClaude,
+  poe: askPoe,
 };
 export const ask = ({
   platform,

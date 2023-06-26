@@ -3,8 +3,9 @@ import { proxyWithPersist } from '@/utils/storage';
 import { chatActionsFactory } from './chats';
 import { Speaker } from '@/types';
 import { RobotType } from '@/enum/robot';
+import { PoeBot } from '@/poe';
 
-export type RobotId = string | number;
+export type RobotId = number | string;
 export type VitsSetting = {
   speaker?: Speaker;
 
@@ -22,19 +23,18 @@ export type BaiduTranslateSetting = {
   from: string;
   to: string;
 };
-export type Robot = {
-  id: RobotId;
-  name: string;
-  description: string;
-  introduction: string;
-  createdDate: number;
-  type: RobotType;
+export type Robot = PoeBot & {
   avatar?: string;
   vits?: VitsSetting;
+  createdDate: number;
+  streamed?: boolean;
+  type: RobotType;
   claude?: {
     channelId?: string;
   };
   baiduTranslate?: BaiduTranslateSetting;
+
+  isPoeBot?: boolean;
 };
 export const robotsState = await proxyWithPersist<{
   list: Robot[];
@@ -59,21 +59,24 @@ export const useRobots = () => {
 };
 export const useRobot = (robotId: RobotId) => {
   const robots = useSnapshot(robotsState);
-  return robots.list.find((r) => r.id === robotId);
+  return robots.list.find((r) => r.botId === robotId);
 };
 
 export const robotsActions = {
   getCurrentRobot: () => {
     if (!robotsState.currentRobotId) return undefined;
-    return robotsState.list.find((r) => r.id === robotsState.currentRobotId);
+    return robotsState.list.find((r) => r.botId === robotsState.currentRobotId);
   },
   addRobot: (robot: Robot) => {
     robotsState.list.push(robot);
-    robotsActions.addOpenedRobot(robot.id);
-    robotsActions.setCurrentRobotId(robot.id);
+    robotsActions.addOpenedRobot(robot.botId);
+    robotsActions.setCurrentRobotId(robot.botId);
+  },
+  addRobots: (robots: Robot[]) => {
+    robotsState.list = robotsState.list.concat(robots);
   },
   getRobotById: (id: RobotId) => {
-    return robotsState.list.find((r) => r.id === id);
+    return robotsState.list.find((r) => r.botId === id);
   },
   updateRobotById: (id: RobotId, data: Partial<Omit<Robot, 'id'>>) => {
     const robot = robotsActions.getRobotById(id);
@@ -93,7 +96,7 @@ export const robotsActions = {
         (id) => id !== robotId,
       );
     }
-    robotsState.list = robotsState.list.filter((r) => r.id !== robotId);
+    robotsState.list = robotsState.list.filter((r) => r.botId !== robotId);
     chatActionsFactory(robotId).removeAllMessages();
   },
   addOpenedRobot: (robotId: RobotId) => {

@@ -11,6 +11,7 @@ import About from './components/About';
 import Live2dSetting from './components/Live2dSetting';
 import FileManage from './components/FileManage';
 import BaiduTranslateSetting from './components/BaiduTranslateSetting';
+import PoeSetting from './components/PoeSetting';
 
 const Setting = () => {
   const onTabChange = () => {};
@@ -38,6 +39,9 @@ const Setting = () => {
   });
   const fileManageTitle = intl.formatMessage({
     id: `setting.fileManage`,
+  });
+  const poeSettingTitle = intl.formatMessage({
+    id: `setting.poeSetting`,
   });
   return (
     <WindowContainer name="setting">
@@ -126,6 +130,15 @@ const Setting = () => {
               children: (
                 <Container title={fileManageTitle}>
                   <FileManage />
+                </Container>
+              ),
+            },
+            {
+              key: 'poeSetting',
+              label: poeSettingTitle,
+              children: (
+                <Container title={poeSettingTitle}>
+                  <PoeSetting />
                 </Container>
               ),
             },

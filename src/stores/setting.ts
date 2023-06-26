@@ -51,6 +51,13 @@ export type AppSetting = {
     appid?: string;
     key?: string;
   };
+
+  poe: {
+    basePath?: string;
+    pb?: string;
+    proxy?: string;
+    enabled?: boolean;
+  };
 };
 
 const defaultClaude = {
@@ -86,6 +93,12 @@ const defaultBaiduTranslate = {
   appid: undefined,
   key: undefined,
 };
+
+const defaultPoe = {
+  basePath: '',
+  pb: '',
+  enabled: false,
+};
 export const appSettingState = await proxyWithPersist<AppSetting>(
   'appSetting',
   {
@@ -95,6 +108,7 @@ export const appSettingState = await proxyWithPersist<AppSetting>(
     vits: { ...defaultVits },
     claude: { ...defaultClaude },
     baiduTranslate: { ...defaultBaiduTranslate },
+    poe: { ...defaultPoe },
   },
   {
     onSave: async () => {
@@ -164,6 +178,14 @@ export const appSettingActions = {
   },
   resetBaiduTranslateSetting: () => {
     appSettingState.baiduTranslate = { ...defaultBaiduTranslate };
+  },
+
+  /** poe */
+  updatePoeSetting: (poe: Partial<AppSetting['poe']>) => {
+    appSettingState.poe = { ...appSettingState.poe, ...poe };
+  },
+  resetPoeSetting: () => {
+    appSettingState.poe = { ...defaultPoe };
   },
 
   toggleTheme: () => {

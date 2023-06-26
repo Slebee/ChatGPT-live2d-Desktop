@@ -38,6 +38,7 @@ export default {
   'chat.form.name': '名字',
   'chat.form.avatar': '头像',
   'chat.form.robotType': '类型',
+  'chat.form.prompt': '指令',
   'chat.form.voice': '声音',
   'chat.form.vits.noise': '噪声',
   'chat.form.vits.noise.description': '一般来说，值越低越莫得感情',
@@ -45,7 +46,7 @@ export default {
     '调节语音长度，相当于调节语速，该数值越大语速越慢',
   'chat.form.vits.length': '语速',
   'chat.form.reference': '参考',
-  'chat.form.description': '人设',
+  'chat.form.description': '描述',
   'chat.form.missingApiKey': '请先设置你的OpenAI API Key',
   'chat.form.inputAreaPlaceholder': '在这里输入...',
   'chat.form.gotoSetApiKey': '设置',
@@ -75,4 +76,10 @@ export default {
 
   /** baidu translate */
   'setting.baiduTranslateSetting': '百度翻译',
+
+  /** poe */
+  'setting.poeSetting': 'Poe 设置',
+  'setting.poe.port': '端口',
+  'setting.poe.proxy': '代理',
+  'setting.poe.enabled': '启用',
 };

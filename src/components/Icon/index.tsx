@@ -1,12 +1,16 @@
+import { LoadingOutlined } from '@ant-design/icons';
+
 const Icon = ({
   children,
   onClick,
   className,
+  loading = false,
   style,
 }: {
   children: React.ReactNode;
   onClick?: () => void;
   className?: string;
+  loading?: boolean;
   style?: React.CSSProperties;
 }) => {
   return (
@@ -17,7 +21,7 @@ const Icon = ({
       }`}
       style={style}
     >
-      {children}
+      {loading ? <LoadingOutlined /> : children}
     </div>
   );
 };

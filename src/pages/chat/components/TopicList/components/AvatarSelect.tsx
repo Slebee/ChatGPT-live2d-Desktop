@@ -8,12 +8,18 @@ type AvatarSelectProps = {
   value?: string;
   onChange?: (value: string) => void;
   singleMode?: boolean;
+  disabled?: boolean;
 };
 type AvatarItem = {
   src: string;
   name: string;
 };
-const AvatarSelect = ({ value, onChange, singleMode }: AvatarSelectProps) => {
+const AvatarSelect = ({
+  value,
+  onChange,
+  singleMode,
+  disabled,
+}: AvatarSelectProps) => {
   const [avatarList, setAvatarList] = useState<AvatarItem[]>([
     {
       src: '/avatars/cat.png',
@@ -43,6 +49,9 @@ const AvatarSelect = ({ value, onChange, singleMode }: AvatarSelectProps) => {
     setAvatarList((prev) => [...prev, { src, name: 'custom' }]);
     onChange?.(src);
   };
+  if (disabled) {
+    return <Avatar src={value} />;
+  }
   if (singleMode) {
     return (
       <Avatar src={value} className="cursor-pointer" onClick={handleUpload} />

@@ -8,7 +8,7 @@
   },
   "package": {
     "productName": "CatGpt",
-    "version": "0.3.1"
+    "version": "0.4.0"
   },
   "tauri": {
     "systemTray": {
@@ -36,6 +36,11 @@
             "name": "run-vits-serve",
             "cmd": "",
             "args": [{ "validator": "\\S+" }]
+          },
+          {
+            "name": "PoeApp",
+            "sidecar": true,
+            "args": true
           }
         ]
       },
@@ -51,8 +56,9 @@
       "http": {
         "all": true,
         "request": true,
-        "scope": ["https://**", "http://**"]
+        "scope": ["https://**", "http://**", "ws://**", "wss://**"]
       },
+
       "protocol": {
         "asset": true,
         "assetScope": ["**"]
@@ -65,7 +71,7 @@
       "deb": {
         "depends": []
       },
-      "externalBin": [],
+      "externalBin": ["PoeApp"],
       "icon": [
         "icons/32x32.png",
         "icons/128x128.png",
