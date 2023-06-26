@@ -26,7 +26,8 @@ This project was created for personal learning of tauri and to facilitate the us
 - [ ] Clear cache
 - [ ] Persistent model files
 - [ ] Combine with chatgpt to customize model behavior
-- [x] Support claude?
+- [x] Support claude
+- [x] Support Poe 
 
 ## Usage
 
