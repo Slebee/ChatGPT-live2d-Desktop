@@ -1,10 +1,10 @@
 # ChatGPT-live2d-Desktop
 
+[中文](https://github.com/Slebee/ChatGPT-live2d-Desktop/blob/main/README_CN.md)
+
 This project was created for personal learning of tauri and to facilitate the use of ChatGpt, the live2d aspect is additional entertainment. Personal effort is limited, there should be some bugs.
 
-![image](https://github.com/Slebee/ChatGPT-live2d-Desktop/blob/main/public/t.png)
-![image](https://github.com/Slebee/ChatGPT-live2d-Desktop/blob/main/public/t1.png)
-![image](https://github.com/Slebee/ChatGPT-live2d-Desktop/blob/main/public/t2.png)
+![image](https://github.com/Slebee/ChatGPT-live2d-Desktop/blob/main/public/t.png) ![image](https://github.com/Slebee/ChatGPT-live2d-Desktop/blob/main/public/t1.png) ![image](https://github.com/Slebee/ChatGPT-live2d-Desktop/blob/main/public/t2.png)
 
 ## Basic Features
 
