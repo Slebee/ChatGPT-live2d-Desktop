@@ -33,9 +33,9 @@
             "args": ["/C", { "validator": "\\S+" }]
           },
           {
-            "name": "run-vits-serve",
-            "cmd": "",
-            "args": [{ "validator": "\\S+" }]
+            "name": "taskkill",
+            "cmd": "taskkill",
+            "args": ["/f", "/im", { "validator": "\\S+" }]
           },
           {
             "name": "PoeApp",
@@ -110,8 +110,8 @@
         "resizable": true,
         "title": "chat",
         "focus": true,
-        "width": 600,
-        "height": 700,
+        "width": 500,
+        "height": 600,
         "center": true,
         "transparent": false,
         "decorations": false,

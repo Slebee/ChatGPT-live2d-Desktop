@@ -1,6 +1,12 @@
+import { RobotType } from '@/enum/robot';
+import {
+  PoeServerStatusEnum,
+  Robot,
+  useRobots,
+} from '@/pages/chat/stores/robots';
 import { useAppSetting } from '@/stores/setting';
 import { showWindow } from '@/utils';
-import { App, Input, message } from 'antd';
+import { App, Input } from 'antd';
 import { useState } from 'react';
 import { useIntl } from 'umi';
 
@@ -8,11 +14,13 @@ type SearchProps = {
   onSubmit?: (value: string) => void;
   loading?: boolean;
   onClose?: () => void;
+  robot: Robot;
 };
-export default ({ onSubmit, loading }: SearchProps) => {
+export default ({ onSubmit, loading, robot }: SearchProps) => {
   const [value, setValue] = useState<string>('');
-  const { modal } = App.useApp();
+  const { modal, message } = App.useApp();
   const [setting] = useAppSetting();
+  const { poeServer } = useRobots();
   const intl = useIntl();
   const missingApiKeyMsg = intl.formatMessage({
     id: 'chat.form.missingApiKey',
@@ -24,7 +32,7 @@ export default ({ onSubmit, loading }: SearchProps) => {
     id: 'chat.form.gotoSetApiKey',
   });
   const submit = () => {
-    if (!setting.openAI.apiKey) {
+    if (robot.type === RobotType.GPT && !setting.openAI.apiKey) {
       modal.confirm({
         title: 'Tips',
         content: missingApiKeyMsg,
@@ -38,6 +46,12 @@ export default ({ onSubmit, loading }: SearchProps) => {
         },
       });
       return;
+    }
+    if (robot.type === RobotType.POE) {
+      if (poeServer.status !== PoeServerStatusEnum.Connected) {
+        message.error('Please connect to the POE Server first');
+        return;
+      }
     }
     onSubmit?.(value);
     setValue('');

@@ -3,11 +3,11 @@ import TopicList from './components/TopicList';
 // @ts-ignore
 import { Allotment } from 'allotment';
 import { robotsActions, useRobots } from './stores/robots';
-import { Alert, Empty } from 'antd';
+import { Alert, App, Empty } from 'antd';
 import TopicListActions from './components/TopicListActions';
 import { useEffect, useRef, useState } from 'react';
 import useUpdateEffect from '@/hooks/useUpdateEffect';
-import { useAppSetting } from '@/stores/setting';
+import { AppSetting, appSettingActions, useAppSetting } from '@/stores/setting';
 import { listen } from '@tauri-apps/api/event';
 import Search from './components/TopicList/components/Search';
 import { Events } from '@/enum/events';
@@ -29,11 +29,12 @@ enum PoeServerStatusEnum {
   Idle = '',
   Connecting = 'connecting',
   Connected = 'connected',
-  Disconnected = 'disconnected',
+  Failure = 'failure',
 }
 const tipsRender = (
   robot: Robot,
   status: PoeServerStatusEnum,
+  onRetry: () => void,
   err?: string,
 ) => {
   if (robot.type !== RobotType.POE) {
@@ -48,8 +49,18 @@ const tipsRender = (
       showIcon={false}
       className="absolute w-full top-0 z-10 pt-1 pb-1"
       description={
-        status === PoeServerStatusEnum.Disconnected ? (
-          <span className="text-red-700">{err}</span>
+        status === PoeServerStatusEnum.Failure ? (
+          <span className="text-red-700">
+            {err}{' '}
+            <a
+              className="text-red-400 hover:text-red-500"
+              onClick={() => {
+                onRetry();
+              }}
+            >
+              重试
+            </a>
+          </span>
         ) : (
           status
         )
@@ -58,14 +69,11 @@ const tipsRender = (
   );
 };
 const ChatPage = () => {
-  const { openedRobots, robots, currentRobotId, fullScreenRobot } = useRobots();
+  const { openedRobots, robots, currentRobotId, fullScreenRobot, poeServer } =
+    useRobots();
   const [setting] = useAppSetting();
-  const [poeServerStatus, setPoeServerStatus] = useState<PoeServerStatusEnum>(
-    PoeServerStatusEnum.Idle,
-  );
-  const [poeServerErrorMessage, setPoeServerErrorMessage] = useState('');
   const allotmentRef = useRef<any>(null);
-
+  const { message } = App.useApp();
   const initPoeRobots = () => {
     getPoeBots()
       .then((res) => {
@@ -108,8 +116,11 @@ const ChatPage = () => {
     const unListenEventsManager = new UnListenEventsManager();
     async function listenChange() {
       unListenEventsManager.addEvent(
-        await listen(Events.settingChanged, () => {
-          debounceReload();
+        await listen<AppSetting>(Events.settingChanged, ({ payload }) => {
+          if (payload) {
+            appSettingActions.updateSetting(payload);
+          }
+          // debounceReload();
         }),
       );
     }
@@ -120,32 +131,19 @@ const ChatPage = () => {
     };
   }, []);
 
-  useEffect(() => {
-    async function initPoe() {
-      if (setting.poe.enabled) {
-        setPoeServerStatus(PoeServerStatusEnum.Connecting);
-        try {
-          await PoeSocket.connect({
-            onConnect: () => {
-              setPoeServerStatus(PoeServerStatusEnum.Connected);
-            },
-            onDisconnect: () => {
-              setPoeServerStatus(PoeServerStatusEnum.Disconnected);
-            },
-            onFail: () => {
-              setPoeServerStatus(PoeServerStatusEnum.Disconnected);
-            },
-          });
-          initPoeRobots();
-        } catch (err: any) {
-          setPoeServerErrorMessage(err.message);
-        }
+  async function initPoe() {
+    if (setting.poe.enabled) {
+      try {
+        await PoeSocket.connect({
+          onConnected: initPoeRobots,
+        });
+      } catch (err: any) {
+        message.error(`PoeSocket.connect fail: ${err.message}`);
       }
     }
+  }
+  useEffect(() => {
     initPoe();
-    return () => {
-      PoeSocket.disconnect();
-    };
   }, [setting.poe.enabled]);
 
   const showEmpty = currentRobotId === undefined && !setting.basic.opened;
@@ -190,8 +188,9 @@ const ChatPage = () => {
                       robot={robot}
                       tips={tipsRender(
                         robot,
-                        poeServerStatus,
-                        poeServerErrorMessage,
+                        poeServer.status,
+                        initPoe,
+                        poeServer.errMsg,
                       )}
                       className={
                         currentRobotId === robot.botId && !setting.basic.opened

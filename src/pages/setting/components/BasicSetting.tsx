@@ -3,7 +3,7 @@ import {
   sendKeyOptions,
   useAppSetting,
 } from '@/stores/setting';
-import { FormattedMessage, getAllLocales, setLocale } from 'umi';
+import { FormattedMessage, getAllLocales } from 'umi';
 import { Select, Switch } from 'antd';
 import SettingItem from './SettingItem';
 import AvatarSelect from '@/pages/chat/components/TopicList/components/AvatarSelect';
@@ -48,7 +48,6 @@ const BasicSetting = () => {
             appSettingActions.updateBasicSetting({
               language: value,
             });
-            setLocale(value, false);
           }}
           options={getAllLocales().map((item) => ({
             label: item,

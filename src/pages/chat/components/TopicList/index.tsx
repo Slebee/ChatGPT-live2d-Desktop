@@ -8,6 +8,7 @@ import { Events } from '@/enum/events';
 import { getBotInfoByDisplayName } from '@/poe';
 import { App } from 'antd';
 import { debounce } from '@/utils';
+import { RobotType } from '@/enum/robot';
 
 const updateBotInfoByDisplayNameDebounce = debounce(
   async (
@@ -69,15 +70,17 @@ const TopicList = ({}: TopicListProps) => {
                 await emit(Events.currentRobotChanged, {
                   robotId: robot.botId,
                 });
-                updateBotInfoByDisplayNameDebounce(
-                  {
-                    displayName: robot.displayName,
-                    botId: robot.botId,
-                  },
-                  (m: string) => {
-                    message.error(`更新${robot.displayName}信息失败: ${m}`);
-                  },
-                );
+                if (robot.type === RobotType.POE) {
+                  updateBotInfoByDisplayNameDebounce(
+                    {
+                      displayName: robot.displayName,
+                      botId: robot.botId,
+                    },
+                    (m: string) => {
+                      message.error(`更新${robot.displayName}信息失败: ${m}`);
+                    },
+                  );
+                }
               }}
               onRemove={() => {
                 robotsActions.removeRobot(robot.botId);

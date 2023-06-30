@@ -36,15 +36,31 @@ export type Robot = PoeBot & {
 
   isPoeBot?: boolean;
 };
+export enum PoeServerStatusEnum {
+  Idle = '',
+  Connecting = 'connecting',
+  Connected = 'connected',
+  Failure = 'failure',
+}
 export const robotsState = await proxyWithPersist<{
   list: Robot[];
   openedRobots: RobotId[];
   currentRobotId?: RobotId;
   fullScreenRobot?: Robot;
   filter?: string;
+
+  poeServer: {
+    status: PoeServerStatusEnum;
+    errMsg?: string;
+  };
 }>('robots', {
   list: [],
   openedRobots: [],
+
+  poeServer: {
+    status: PoeServerStatusEnum.Idle,
+    errMsg: '',
+  },
 });
 
 export const useRobots = () => {
@@ -55,6 +71,7 @@ export const useRobots = () => {
     currentRobotId: robots.currentRobotId,
     fullScreenRobot: robots.fullScreenRobot,
     filter: robots.filter,
+    poeServer: robots.poeServer,
   };
 };
 export const useRobot = (robotId: RobotId) => {
@@ -122,6 +139,13 @@ export const robotsActions = {
   },
   setFilter: (filter: string) => {
     robotsState.filter = filter;
+  },
+
+  updatePoeServer: (status: PoeServerStatusEnum, errMsg?: string) => {
+    robotsState.poeServer = {
+      status,
+      errMsg,
+    };
   },
 
   // vits

@@ -4,6 +4,7 @@ import { useAppSetting } from '@/stores/setting';
 
 export default function Layout() {
   const [setting] = useAppSetting();
+  console.log('setting.basic.theme', setting.basic.theme);
   return (
     <ConfigProvider
       theme={{

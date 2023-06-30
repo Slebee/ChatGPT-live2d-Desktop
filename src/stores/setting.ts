@@ -3,6 +3,7 @@ import { darkMode } from '@/utils';
 import { proxyWithPersist } from '@/utils/storage';
 import { emit } from '@tauri-apps/api/event';
 import { Events } from '@/enum/events';
+import { setLocale } from 'umi';
 
 export const sendKeyOptions = ['Enter', 'Ctrl+Enter'] as const;
 export const modelOptions = [
@@ -111,8 +112,31 @@ export const appSettingState = await proxyWithPersist<AppSetting>(
     poe: { ...defaultPoe },
   },
   {
-    onSave: async () => {
-      await emit(Events.settingChanged);
+    onSave: async (_, setting) => {
+      if (setting.basic.theme === 'dark') {
+        if (!darkMode.isEnabled()) {
+          darkMode.enable();
+        }
+      } else if (setting.basic.theme === 'light') {
+        if (darkMode.isEnabled()) {
+          darkMode.disable();
+        }
+      }
+      if (setting.basic.language) {
+        console.log('language', setting.basic.language);
+        const prevLang = setting.basic.language === 'zh-CN' ? 'en-US' : 'zh-CN';
+
+        /**
+         * 由于umi的bug，需要先设置为其他语言，再设置为目标语言，不然会出现死活不生效的情况
+         */
+        setLocale(prevLang, false);
+        setLocale(setting.basic.language, false);
+      }
+
+      if (window.location.href.includes('setting')) {
+        // 只有设置页面才会触发，否则会死循环，需要更好的实现方式
+        await emit(Events.settingChanged, setting);
+      }
     },
   },
 );
@@ -191,11 +215,6 @@ export const appSettingActions = {
   toggleTheme: () => {
     const nextTheme =
       appSettingState.basic.theme === 'light' ? 'dark' : 'light';
-    if (nextTheme === 'dark') {
-      darkMode.enable();
-    } else {
-      darkMode.disable();
-    }
     appSettingActions.updateBasicSetting({ theme: nextTheme });
   },
 
@@ -213,5 +232,15 @@ export const appSettingActions = {
     appSettingActions.updateBasicSetting({
       opened: !appSettingState.basic.opened,
     });
+  },
+
+  updateSetting: (setting: AppSetting) => {
+    appSettingState.baiduTranslate = setting.baiduTranslate;
+    appSettingState.basic = setting.basic;
+    appSettingState.chat = setting.chat;
+    appSettingState.claude = setting.claude;
+    appSettingState.openAI = setting.openAI;
+    appSettingState.vits = setting.vits;
+    appSettingState.poe = setting.poe;
   },
 };

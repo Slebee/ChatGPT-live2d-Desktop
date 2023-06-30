@@ -27,7 +27,7 @@ export type CommonChatProps = {
 const CommonChat = ({ className, robot, tips }: CommonChatProps) => {
   const [messages] = useChat(robot.botId);
   const firstTimeFocusCurrentRobot = useRef(true);
-  const { message } = App.useApp();
+  const { message: messageFunc } = App.useApp();
   const [setting] = useAppSetting();
   const chatActions = useMemo(
     () => chatActionsFactory(robot.botId),
@@ -228,7 +228,15 @@ const CommonChat = ({ className, robot, tips }: CommonChatProps) => {
                             : VitsStatusEnum.idle
                         }
                         onAudioPlay={() => {
-                          playMessageByTimestamp(message.timestamp);
+                          if (
+                            // @ts-ignore
+                            robot.vits?.speaker?.id !== '' &&
+                            typeof robot.vits?.speaker?.id !== 'undefined'
+                          ) {
+                            playMessageByTimestamp(message.timestamp);
+                          } else {
+                            messageFunc.error('未设置该机器人的语音合成模型');
+                          }
                         }}
                         onAudioPause={stop}
                       />
@@ -255,6 +263,7 @@ const CommonChat = ({ className, robot, tips }: CommonChatProps) => {
               <div className="h-full">
                 <Search
                   loading={loading}
+                  robot={robot}
                   // onClose={hideChat}
                   onSubmit={submit}
                 />

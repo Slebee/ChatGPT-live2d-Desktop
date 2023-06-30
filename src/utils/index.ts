@@ -9,6 +9,7 @@ import { WebviewWindow, WindowOptions } from '@tauri-apps/api/window';
 import {
   enable as enableDarkMode,
   disable as disableDarkMode,
+  isEnabled as isDarkModeEnabled,
 } from 'darkreader';
 import { windowConfig } from '@/config/window';
 
@@ -78,6 +79,7 @@ export const toggleWindowVisible = async (
 ) => {
   const target = WebviewWindow.getByLabel(name);
   const isVisible = await target?.isVisible();
+  console.log('target', target, isVisible);
   if (target) {
     if (isVisible) {
       target.hide();
@@ -99,6 +101,9 @@ export const darkMode = {
   },
   disable: () => {
     disableDarkMode();
+  },
+  isEnabled: () => {
+    return isDarkModeEnabled();
   },
 };
 

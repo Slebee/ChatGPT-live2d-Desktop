@@ -1,6 +1,6 @@
+import { PoeServerStatusEnum, robotsActions } from '@/pages/chat/stores/robots';
 import { appSettingState } from '@/stores/setting';
 import { Child, Command } from '@tauri-apps/api/shell';
-// @ts-ignore
 import { Socket, io } from 'socket.io-client';
 
 type MessageResponse = {
@@ -29,7 +29,8 @@ export type MessageDoneEvent = (response: {
 }) => void;
 const DEFAULT_TIMEOUT = 30000;
 export class PoeSocket {
-  static socket: Socket;
+  static socket: Socket | null;
+  static poeCommander: Child;
   static events: ResponseEvent[] = [];
   static onMessageResponseDoneEvents: MessageDoneEvent[] = [];
 
@@ -38,11 +39,7 @@ export class PoeSocket {
   // 定时器队列，用于存储每条用户消息发出之后的定时器，来控制消息发送超时中断
   static timerQueue: Record<number, NodeJS.Timeout> = {};
 
-  static async connect(options?: {
-    onConnect?: () => void;
-    onDisconnect?: () => void;
-    onFail?: () => void;
-  }) {
+  static async connect(options?: { onConnected?: () => void }) {
     if (!appSettingState.poe.proxy) {
       throw new Error('Poe: 未设置代理');
     }
@@ -53,6 +50,48 @@ export class PoeSocket {
     if (!port) {
       throw new Error('Poe: 未设置端口');
     }
+    await new Command('taskkill', ['/f', '/im', 'PoeApp.exe'], {
+      encoding: 'gbk',
+    }).execute();
+    if (PoeSocket.socket) {
+      PoeSocket.socket.disconnect();
+      PoeSocket.socket = null;
+    }
+    robotsActions.updatePoeServer(PoeServerStatusEnum.Connecting);
+
+    const onConnect = () => {
+      robotsActions.updatePoeServer(PoeServerStatusEnum.Connected);
+      options?.onConnected?.();
+    };
+    const onFail = (err: string) => {
+      robotsActions.updatePoeServer(PoeServerStatusEnum.Failure, err);
+    };
+    const onPoeServerStarted = () => {
+      PoeSocket.socket = io(
+        appSettingState.poe.basePath
+          ?.replaceAll('http:', 'ws:')!
+          .replaceAll('https:', 'wss:')!,
+        {
+          reconnectionDelayMax: 10000,
+          transports: ['websocket'],
+          path: '/ws/socket.io',
+        },
+      )
+        .on('connect', () => {
+          onConnect();
+          console.log('connected');
+        })
+        .on('disconnect', () => {
+          onFail('断开连接');
+          console.log('disconnect');
+        })
+        .on('message_response', (data: MessageResponse) => {
+          console.log('message_response', data);
+          PoeSocket.events.forEach((event) => {
+            event(data);
+          });
+        });
+    };
 
     const command = Command.sidecar(
       'PoeApp',
@@ -67,49 +106,40 @@ export class PoeSocket {
       {
         encoding: 'gbk',
       },
-    )
-      .on('close', (code) => {
-        console.log('on close', code);
-        options?.onFail?.();
-      })
-      .on('error', (err) => {
-        console.log('on error', err);
-      });
-    command.stdout.on('data', (line) => {
-      console.log(`command stdout: "${line}"`);
-      options?.onFail?.();
+    ).on('error', (err) => {
+      console.log('on error', err);
+      onFail(err);
     });
-    command.stderr.on('data', (line) =>
-      console.log(`command stderr: "${line}"`),
-    );
+    const onCommandStdout = (line: string) => {
+      console.log(`command stdout: "${line}"`);
+      if (line.indexOf('Application startup complete') > -1) {
+        onPoeServerStarted();
+      }
+      if (
+        line.indexOf('failed to do request') > -1 &&
+        line.indexOf('stream error') === -1 &&
+        line.indexOf('websocket') === -1
+      ) {
+        onFail(line);
+      }
+      if (
+        line.indexOf('Failed to download https://poe.com too many times.') > -1
+      ) {
+        onFail(line);
+      }
+      if (line.indexOf('ERROR') > -1 && line.indexOf('goodbye') === -1) {
+        onFail(line);
+      }
+    };
+    command.stdout.on('data', (line) => {
+      onCommandStdout(line);
+    });
+    command.stderr.on('data', (line) => {
+      onCommandStdout(line);
+    });
     console.log('start command spawn');
     PoeSocket.poeServerChild = await command.spawn();
     console.log('end command spawn');
-
-    PoeSocket.socket = io(
-      appSettingState.poe.basePath
-        ?.replaceAll('http:', 'ws:')
-        .replaceAll('https:', 'wss:'),
-      {
-        reconnectionDelayMax: 10000,
-        transports: ['websocket'],
-        path: '/ws/socket.io',
-      },
-    )
-      .on('connect', () => {
-        options?.onConnect?.();
-        console.log('connected');
-      })
-      .on('disconnect', () => {
-        options?.onDisconnect?.();
-        console.log('disconnect');
-      })
-      .on('message_response', (data: MessageResponse) => {
-        console.log('message_response', data);
-        PoeSocket.events.forEach((event) => {
-          event(data);
-        });
-      });
   }
 
   static addResponseEvent(ev: ResponseEvent) {
@@ -176,10 +206,5 @@ export class PoeSocket {
         });
       });
     });
-  }
-
-  static disconnect() {
-    PoeSocket.socket.disconnect();
-    PoeSocket.poeServerChild?.kill?.();
   }
 }
